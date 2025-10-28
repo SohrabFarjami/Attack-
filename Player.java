@@ -22,7 +22,12 @@ public class Player{
 		}
 
 	}
-
+	public void play(Card... cards){
+		for(Card card : cards){
+			hand.remove(card);
+			System.out.println("Removing card " + card);
+		}
+	}
 	public List<Card> getHand(){
 		return hand;
 	}
