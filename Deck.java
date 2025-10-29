@@ -17,7 +17,9 @@ public class Deck{
 			System.out.println(card.getSuit());
 		}
 	}
-
+	public void remove(int index){
+		cards.remove(index);
+	}
 	public void remove(Card card){
 		cards.remove(card);
 	}
@@ -26,4 +28,12 @@ public class Deck{
 		cards.add(card);
 	}
 
+	public int size(){
+		return cards.size();
+	}
+
+	public Card get(int index){
+		return cards.get(index);
+	}
+	
 }
