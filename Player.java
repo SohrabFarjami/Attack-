@@ -22,11 +22,11 @@ public class Player{
 		}
 
 	}
-	public void play(Card... cards){
-		for(Card card : cards){
-			hand.remove(card);
-			System.out.println("Removing card " + card);
-		}
+	public void remove(Card card){
+		hand.remove(card);
+	}
+	public void removeAll(List<Card> cards){
+		hand.removeAll(cards);
 	}
 	public List<Card> getHand(){
 		return hand;
