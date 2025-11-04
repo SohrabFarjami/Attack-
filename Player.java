@@ -22,6 +22,10 @@ public class Player{
 		}
 
 	}
+
+	public void addWonCards(List<Card> cards){
+		wonCards.addAll(cards);
+	}
 	public void remove(Card card){
 		hand.remove(card);
 	}

@@ -23,24 +23,19 @@ public class Main{
 		System.out.printf("The trump card is %d of %s %n", trumpCard.getValue(),trumpCard.getSuit());
 		dealCards(p1,deck,4);
 		dealCards(p2,deck,4);
-
-		System.out.print("Player 1 Hand:");
-		for(Card card : p1.getHand()){
-			System.out.printf("[%d of %s] ",card.getValue(),card.getSuit());
-		}
-		System.out.println();
-		System.out.print("Player 2 Hand:");
-		for(Card card : p2.getHand()){
-			System.out.printf("[%d of %s] ",card.getValue(),card.getSuit());
-		}
-		System.out.println();
-		System.out.printf("The starting player is Player %s %n",attacker.getPlayer());
+		//System.out.printf("The starting player is Player %s %n",attacker.getPlayer()); maybe later add with names
 		playRound(attacker,defender);
 
 	}
 
 	static List<Card> attack(Player attacker){
-		List<Card> attackHand = getCardsToPlay(attacker);
+		List<Card> attackHand;
+		do{
+			attackHand = getCardsToPlay(attacker);
+			if(!Card.checkSuits(attackHand)){
+				System.out.println("Invalid input. Suits must match");
+			}
+		}while(!Card.checkSuits(attackHand));
 		attacker.removeAll(attackHand);
 		return attackHand;
 	}
@@ -72,46 +67,67 @@ public class Main{
 		lineScanner.close();
 		return chosenCards;
 	}
-	static List<Card> defend(Player defender, List<Card> attackHand){
-		List<Card> defendHand;
-		boolean validPlay = true;
-		List<Card> wonCards = new ArrayList<Card>();
-
+	static void defend(Player defender,Player attacker, List<Card> attackHand){
+		List<Card> wonCards = new ArrayList<>();
+		List<Card> defendHand = new ArrayList<>();
+		Player winner = attacker;
+		boolean validPlay = false;
+		doloop:
 		do{
 			defendHand = getCardsToPlay(defender);
-			if(attackHand.size() != defendHand.size()){
-				System.out.println("Too many cards selected. Try again.");
-				defendHand = defend(defender, attackHand);
-				validPlay = false;
+			if(attackHand.size() > defendHand.size()){
+				System.out.println("Running");
+				System.out.println("Too little cards selected. Try again.");
 				continue;
 			}
+			if(attackHand.size() < defendHand.size()){
+				System.out.println("Too many cards selected. Try again.");
+				continue;
+			}
+
+			if(!getPlayOrPass()){
+				System.out.println("Passing");
+				break doloop;
+			}
+
+
 			for(int i = 0; i < attackHand.size(); i++){
 				Card attackCard = attackHand.get(i);
 				Card defendCard = defendHand.get(i);
 				if(attackCard.getSuit() != defendCard.getSuit() && defendCard.getSuit() != trumpCard.getSuit()){
-					validPlay = false;
 					System.out.printf("%s does not beat %s (Wrong Suit) %n",defendCard,attackCard);
 					break;
 				}
 				if(defendCard.getValue() < attackCard.getValue() && defendCard.getSuit() != trumpCard.getSuit()){
-					validPlay = false;
 					System.out.printf("%s does not beat %s (Smaller Value) %n",defendCard,attackCard);
+					break;
+				}
+				if(defendCard.getValue() > attackCard.getValue() && defendCard.getSuit() == attackCard.getSuit()){
+					validPlay = true;
+				}
+				if(defendCard.getSuit() == trumpCard.getSuit() && attackCard.getSuit() != trumpCard.getSuit()){
+					validPlay = true;
 				}
 				if(defendCard.getSuit() == trumpCard.getSuit() && attackCard.getSuit() == trumpCard.getSuit()){
 					if(defendCard.getValue() < attackCard.getValue()){
-						validPlay = false;
-						System.out.printf("%s does not beat %s (Smaller Value) %n",defendCard,attackCard);
+					System.out.printf("%s does not beat %s (Smaller Value) %n",defendCard,attackCard);
 					}else{
 						validPlay = true;
-						wonCards.addAll(attackHand);
-						wonCards.addAll(defendHand);
 					}
 				}
 			}
 		}
 		while(!validPlay);
+		if(validPlay){
+			winner = defender;
+		}
+		wonCards.addAll(attackHand);
+		wonCards.addAll(defendHand);
+		
+		System.out.printf("Winner is play %d",winner.getPlayer());
 		System.out.println(wonCards);
-		return defendHand;
+		winner.addWonCards(wonCards);
+		return;
 		
 
 
@@ -119,9 +135,10 @@ public class Main{
 	static void playRound(Player attacker, Player defender){
 		System.out.printf("Player %s's turn %n",attacker.getPlayer());
 		List<Card> attackHand = attack(attacker);
-		System.out.println("Cards in the middle are :");
-		printCards(attackHand);
-		defend(defender,attackHand);
+		System.out.print("Cards in the middle are :");
+		printCards(attackHand, false);
+		System.out.println();
+		defend(defender,attacker,attackHand);
 	}
 
 	static void dealCards(Player player, Deck deck, int count){
@@ -143,9 +160,25 @@ public class Main{
 		return map;
 	}
 
-	static void printCards(List<Card> cards){
+	static void printCards(List<Card> cards, boolean newLine){
 		for(Card card : cards){
-			System.out.printf("[%d of %s]%n",card.getValue(),card.getSuit());
+			if(newLine){
+				System.out.printf("[%d of %s]%n",card.getValue(),card.getSuit());
+			}
+			else{
+				System.out.printf("[%d of %s] ",card.getValue(),card.getSuit());
+		}
+		}
+	}
+
+	static boolean getPlayOrPass(){
+		while(true){
+			System.out.println("Enter y to place cards and n to pass");
+			char answer = scan.next().charAt(0);
+			scan.nextLine();
+			if(answer == 'y' || answer == 'n'){
+				return 'y' == answer;
+			}
 		}
 	}
 
