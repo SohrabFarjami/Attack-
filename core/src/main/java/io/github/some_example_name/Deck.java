@@ -2,6 +2,7 @@ package io.github.some_example_name;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -11,11 +12,16 @@ public class Deck{
 
 
 	public Deck(boolean shuffle,TextureAtlas atlas){
-    Sprite back = atlas.createSprite("card_back");
 		for(Suit suit: Suit.values()){
-            for(Pip pip : Pip.values()){
-                Sprite front = atlas.createSprite("card_" + suit.name, pip.value);
-                cards.add(new Card(pip,suit,front,back));
+            		for(Pip pip : Pip.values()){
+		    		if(pip.index < 5){
+				continue;
+				}
+			Sprite front = atlas.createSprite("card_" + suit.name, pip.index);
+			Sprite back = atlas.createSprite("card_back");
+			Card card = new Card(pip,suit,front,back);
+			card.turn(true);
+			cards.add(card);
 			}
 		}
 		if(shuffle){
@@ -42,6 +48,10 @@ public class Deck{
 
 	public Card get(int index){
 		return cards.get(index);
+	}
+
+	public List<Card> getAll(){
+		return cards;
 	}
 
 	public Card drawLast(){

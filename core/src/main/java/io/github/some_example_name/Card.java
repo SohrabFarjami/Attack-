@@ -9,17 +9,17 @@ import com.badlogic.gdx.math.Rectangle;
 public class Card{
 	private final Suit suit;
 	private final Pip pip;
-    private final Sprite front;
-    private final Sprite back;
-    private boolean turned;
+    	private final Sprite front;
+    	private final Sprite back;
+    	private boolean turned;
 
 	public Card(Pip pip, Suit suit, Sprite front, Sprite back){
 		this.pip = pip;
 		this.suit = suit;
-        this.front = front;
-        this.back = back;
-        front.setSize(1, 1);
-        back.setSize(1, 1);
+		this.front = front;
+		this.back = back;
+		front.setSize(1, 1);
+		back.setSize(1, 1);
 	}
 
 	public Suit getSuit()
@@ -51,6 +51,10 @@ public class Card{
         turned = !turned;
     }
 
+    public void turn(boolean turned){
+	    this.turned = turned;
+    }
+
 	@Override
 	public String toString(){
 		return pip + " of " + suit;
@@ -63,6 +67,15 @@ public class Card{
             front.draw(batch);
         }
 
+    }
+
+    public void drawBack(Batch batch){
+	back.draw(batch);
+    }
+
+    public void rotate90(boolean clockwise){
+	front.rotate90(clockwise);
+	back.rotate90(clockwise);
     }
 
     public Rectangle getBoundingRectangle(){
