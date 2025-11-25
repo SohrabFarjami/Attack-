@@ -146,7 +146,7 @@ public class GameController{
 		for(int i = 0 ; i < count ; i++){
 			for(Player player : players){
 				Card lastCard = deck.drawLast();
-				lastCard.turn();
+				lastCard.turn(false);
 				player.addtoHand(lastCard);
 			}
 		}
@@ -174,10 +174,8 @@ public class GameController{
     public void clickCard(Card chosenCard){
         if(chosenCards.contains(chosenCard)){
 		chosenCards.remove(chosenCard);
-		chosenCard.turn(false);
         }else{
 		chosenCards.add(chosenCard);
-		chosenCard.turn(gamestate.getPass());
 	}
 
 

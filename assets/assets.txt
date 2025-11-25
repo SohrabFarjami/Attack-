@@ -62,5 +62,8 @@ assets/ui.png
 assets/uiskin.atlas
 assets/uiskin.json
 assets/uiskin.png
+hs_err_pid278524.log
 hs_err_pid298306.log
+hs_err_pid367454.log
+hs_err_pid368405.log
 hs_err_pid705694.log

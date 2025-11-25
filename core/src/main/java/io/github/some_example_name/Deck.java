@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class Deck{
 	private ArrayList<Card> cards = new ArrayList<Card>();
@@ -17,8 +18,8 @@ public class Deck{
 		    		if(pip.index < 5){
 				continue;
 				}
-			Sprite front = atlas.createSprite("card_" + suit.name, pip.index);
-			Sprite back = atlas.createSprite("card_back");
+			TextureRegion front = atlas.findRegion("card_" + suit.name, pip.index);
+			TextureRegion back = atlas.findRegion("card_back");
 			Card card = new Card(pip,suit,front,back);
 			card.turn(true);
 			cards.add(card);

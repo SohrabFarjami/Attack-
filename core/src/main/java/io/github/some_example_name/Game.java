@@ -31,6 +31,7 @@ public class Game implements ApplicationListener {
     ShapeRenderer shapeRenderer;
     Rectangle button;
     Rectangle passButton;
+    Sprite sprite;
    public void create () {
         font = new BitmapFont();
         spriteBatch = new SpriteBatch();
