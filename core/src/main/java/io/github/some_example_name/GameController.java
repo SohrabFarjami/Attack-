@@ -50,7 +50,6 @@ public class GameController{
 		}
         	defender = gamestate.getDefender();
         	attacker = gamestate.getAttacker();
-		RoundState roundState = gamestate.getRoundState();
 //		while(defender.handSize() < 4 || attacker.handSize() < 4){
 //			if(defender.handSize() < 4){
 //				defender.addtoHand(deck.drawLast());
@@ -69,6 +68,14 @@ public class GameController{
 			printCards(gamestate.getRiverCards(), true, false);
 			System.out.println("Removing chosen cards");
 			chosenCards.clear();
+			for(Card card : gamestate.getCurrentPlayer().getHand()){
+				card.setY(card.getY() - 4f);
+			}
+			for(Card card : gamestate.getNextPlayer().getHand()){
+				card.setY(card.getY() + 4f);
+			}
+
+			// TODO fix ugly code
 		}
 	}
 	
@@ -143,11 +150,21 @@ public class GameController{
 	}
 
 	public void dealCards(int count){
+		float delay = 0;
 		for(int i = 0 ; i < count ; i++){
 			for(Player player : players){
+				int handSize = player.getHand().size();
 				Card lastCard = deck.drawLast();
 				lastCard.turn(false);
 				player.addtoHand(lastCard);
+				if(player == gamestate.getCurrentPlayer()){
+					lastCard.moveTo(Position.CURRENT_HAND.x + handSize, Position.CURRENT_HAND.y, 0.5f,delay); //Remove hardcodes
+					delay += 0.1f;
+				}
+				else{
+					lastCard.moveTo(Position.OPPONENT_HAND.x + handSize, Position.OPPONENT_HAND.y, 0.5f,delay); //Remove hardcodes
+					delay += 0.1f;
+				}
 			}
 		}
 	}
@@ -174,9 +191,11 @@ public class GameController{
     public void clickCard(Card chosenCard){
         if(chosenCards.contains(chosenCard)){
 		chosenCards.remove(chosenCard);
+		chosenCard.setY(chosenCard.getY() - 0.1f);
         }else{
 		chosenCards.add(chosenCard);
-	}
+		chosenCard.setY(chosenCard.getY() + 0.1f);
+	} //TODO remove hardcodes and maybe add animation
 
 
     }

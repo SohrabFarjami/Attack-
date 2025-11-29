@@ -22,6 +22,8 @@ public class Deck{
 			TextureRegion back = atlas.findRegion("card_back");
 			Card card = new Card(pip,suit,front,back);
 			card.turn(true);
+
+			card.setPosition(Position.DECK.x, Position.DECK.y);
 			cards.add(card);
 			}
 		}

@@ -99,6 +99,7 @@ public class Game implements ApplicationListener {
    }
 
    private void draw(){
+	   float delta = Gdx.graphics.getDeltaTime();
     ScreenUtils.clear(Color.BLACK);
     viewport.apply();
 
@@ -115,25 +116,24 @@ public class Game implements ApplicationListener {
 
     for(Card card : gameController.getDeck().getAll()){
 	    card.draw(spriteBatch);
+	    card.update(delta);
     }
 
     for(Card card: currentPlayer.getHand()){
-        if(gameController.getChosenCards().contains(card)){
-            card.setPosition(pos++, 0.1f);
-        }else{
-            card.setPosition(pos++, 0f);
-        }
         card.draw(spriteBatch);
+	card.update(delta);
     }
     pos = 2;
     for(Card card : gameState.getRiverCards()){
 	card.setPosition(pos++, 2f);
 	card.draw(spriteBatch);
+	card.update(delta);
     }
     pos = 2;
     for(Card card : gameState.getNextPlayer().getHand()){ // Optimize this garbage code
-	    card.setPosition(pos++, 4);
+	    //card.setPosition(pos++, 4);
 	    card.drawBack(spriteBatch);
+	    card.update(delta);
     }
     spriteBatch.end();
 
@@ -168,6 +168,7 @@ public class Game implements ApplicationListener {
    public void dispose () {
        spriteBatch.dispose();
        atlas.dispose();
+       shapeRenderer.dispose();
    }
 }
 
