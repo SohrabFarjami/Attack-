@@ -66,7 +66,6 @@ public class GameController{
 
 			System.out.print("Cards in the middle are :");
 			printCards(gamestate.getRiverCards(), true, false);
-			System.out.println("Removing chosen cards");
 			chosenCards.clear();
 			for(Card card : gamestate.getCurrentPlayer().getHand()){
 				card.setY(card.getY() - 4f);
@@ -103,12 +102,22 @@ public class GameController{
 		else if(gamestate.getPass()){
 			attacker.addWonCards(wonCards);;
 		}
-		dealCards(gamestate.getRiverCards().size());
+		gamestate.setRoundState(RoundState.ATTACKING);
 		defender.removeAll(chosenCards);
+		dealCards(gamestate.getRiverCards().size());
 		gamestate.clearRiver();
 		chosenCards.clear();
 		gamestate.setPass(false);
-		gamestate.setRoundState(RoundState.ATTACKING);
+
+		// TODO FIX GARBAGE CODE
+		for(Card card : defender.getHand()){
+			card.setY(card.getY() + 4);
+		}
+		for(Card card : attacker.getHand()){
+			card.setY(card.getY() - 4);
+		}
+
+		// TODO FIX GARBAGE CODE
 	}
 
 
@@ -153,16 +162,15 @@ public class GameController{
 		float delay = 0;
 		for(int i = 0 ; i < count ; i++){
 			for(Player player : players){
-				int handSize = player.getHand().size();
 				Card lastCard = deck.drawLast();
 				lastCard.turn(false);
 				player.addtoHand(lastCard);
 				if(player == gamestate.getCurrentPlayer()){
-					lastCard.moveTo(Position.CURRENT_HAND.x + handSize, Position.CURRENT_HAND.y, 0.5f,delay); //Remove hardcodes
+					lastCard.moveTo(Position.CURRENT_HAND.x + player.getSlot(lastCard), Position.CURRENT_HAND.y, 0.5f,delay); //Remove hardcodes
 					delay += 0.1f;
 				}
 				else{
-					lastCard.moveTo(Position.OPPONENT_HAND.x + handSize, Position.OPPONENT_HAND.y, 0.5f,delay); //Remove hardcodes
+					lastCard.moveTo(Position.OPPONENT_HAND.x + player.getSlot(lastCard), Position.OPPONENT_HAND.y, 0.5f,delay); //Remove hardcodes
 					delay += 0.1f;
 				}
 			}

@@ -8,7 +8,7 @@ public class Player{
 	private int player;
 	private List<Card> hand = new ArrayList<Card>(4);
 	private List<Card> wonCards = new ArrayList<Card>();
-
+	private Card[] handSlots = new Card[4];
 
 	public Player(){
 		player = nextPlayer;
@@ -21,6 +21,12 @@ public class Player{
 	public void addtoHand(Card... cards){
 		for(Card card:cards){
 			hand.add(card);
+			for(int i = 0; i < 4; i++){
+				if(handSlots[i] == null){
+					handSlots[i] = card; // Come up with better solution;
+					break;
+				}
+			}
 		}
 
 	}
@@ -29,9 +35,13 @@ public class Player{
 		wonCards.addAll(cards);
 	}
 	public void remove(Card card){
+		removeSlot(card);
 		hand.remove(card);
 	}
 	public void removeAll(List<Card> cards){
+		for(Card card : cards){
+			removeSlot(card);
+		}
 		hand.removeAll(cards);
 	}
 	public List<Card> getHand(){
@@ -42,5 +52,25 @@ public class Player{
 		return hand.size();
 	}
 
+	private void removeSlot(Card... cards){
+		for(Card card : cards){
+			for(int i = 0; i < 4; i++){
+				if(handSlots[i] == card){
+					handSlots[i] = null;
+					break;
+				}
+			}
+		}
+	}
+
+
+	public int getSlot(Card card){
+		for(int i = 0; i < 4; i++){
+			if(handSlots[i] == card){
+				return i;
+			}
+		}
+		return -1;
+		}
 
 }

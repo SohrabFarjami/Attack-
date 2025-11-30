@@ -75,7 +75,6 @@ public class Game implements ApplicationListener {
             viewport.unproject(touchPos);
             for(Card card : currentPlayer.getHand()){
                 if(card.getBoundingRectangle().contains(touchPos)){
-			System.out.printf("%s clicked! %n",card);
                     	gameController.clickCard(card);
                 }
             }
