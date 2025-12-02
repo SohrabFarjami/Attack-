@@ -1,5 +1,8 @@
 package io.github.some_example_name;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -32,11 +35,14 @@ public class Game implements ApplicationListener {
     Rectangle button;
     Rectangle passButton;
     Sprite sprite;
+    List<Card> cards;
    public void create () {
         font = new BitmapFont();
         spriteBatch = new SpriteBatch();
         atlas = new TextureAtlas(Gdx.files.internal("assets/cards.atlas"));
         gameController = new GameController(atlas);
+	cards = new ArrayList<>(gameController.getDeck().getAll());
+	gameController.startGame();
         gameState = gameController.getGameState();
         viewport = new FitViewport(8, 5);
         touchPos = new Vector2();
@@ -111,29 +117,11 @@ public class Game implements ApplicationListener {
     font.draw(spriteBatch,"Trump Card",7,4);
     gameState.getTrumpCard().draw(spriteBatch);
 
-    int pos = 2;
-
-    for(Card card : gameController.getDeck().getAll()){
-	    card.draw(spriteBatch);
+    for(Card card : cards){
+	    card.draw(spriteBatch); // TODO make this the only draw call
 	    card.update(delta);
     }
 
-    for(Card card: currentPlayer.getHand()){
-        card.draw(spriteBatch);
-	card.update(delta);
-    }
-    pos = 2;
-    for(Card card : gameState.getRiverCards()){
-	card.setPosition(pos++, 2f);
-	card.draw(spriteBatch);
-	card.update(delta);
-    }
-    pos = 2;
-    for(Card card : gameState.getNextPlayer().getHand()){ // Optimize this garbage code
-	    //card.setPosition(pos++, 4);
-	    card.drawBack(spriteBatch);
-	    card.update(delta);
-    }
     spriteBatch.end();
 
     shapeRenderer.begin(ShapeType.Filled);

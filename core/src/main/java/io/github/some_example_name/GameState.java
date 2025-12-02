@@ -6,7 +6,7 @@ import java.util.List;
 public class GameState{
     public enum RoundState{
         ATTACKING,
-        DEFENDING
+        DEFENDING,
     }
 
     private boolean pass = false;;

@@ -27,14 +27,18 @@ public class GameController{
 
 	
 	public GameController(TextureAtlas atlas){
-        Collections.shuffle(players);
-        gamestate = new GameState(players.get(0), players.get(1));
-	deck = new Deck(true,atlas);
-        gamestate.setTrumpCard(deck.get(1));
-        trumpCard = gamestate.getTrumpCard();
+		Collections.shuffle(players);
+		gamestate = new GameState(players.get(0), players.get(1));
+		deck = new Deck(true,atlas);
 
+	}
+
+	public void startGame(){
+		gamestate.setTrumpCard(deck.get(1));
+		trumpCard = gamestate.getTrumpCard();
 		dealCards(4);
 	}
+
 		//System.out.printf("The starting player is Player %s %n",attacker.getPlayer()); maybe later add with names
 	public void playRound(){
 		if(gamestate.getRoundState() == RoundState.ATTACKING){
@@ -59,13 +63,15 @@ public class GameController{
 //			}
 //		}
 		if(validAttack(chosenCards)){
+			int pos = 2; //TODO remove hardcodes
+			for(Card card : chosenCards){
+				card.moveTo(pos++, 2, 0.1f, 0);
+			}
 			gamestate.setRiverCards(chosenCards);
 			attacker.removeAll(chosenCards);
 
 			gamestate.setRoundState(RoundState.DEFENDING);
 
-			System.out.print("Cards in the middle are :");
-			printCards(gamestate.getRiverCards(), true, false);
 			chosenCards.clear();
 			for(Card card : gamestate.getCurrentPlayer().getHand()){
 				card.setY(card.getY() - 4f);
@@ -103,6 +109,10 @@ public class GameController{
 			attacker.addWonCards(wonCards);;
 		}
 		gamestate.setRoundState(RoundState.ATTACKING);
+		for(Card card : wonCards){
+			card.turn(true);
+			card.moveTo(Position.CURRENT_HAND.x + 4, Position.CURRENT_HAND.y, 0.3f, 0);
+		}
 		defender.removeAll(chosenCards);
 		dealCards(gamestate.getRiverCards().size());
 		gamestate.clearRiver();
