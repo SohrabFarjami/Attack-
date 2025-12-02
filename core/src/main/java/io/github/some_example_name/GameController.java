@@ -54,14 +54,6 @@ public class GameController{
 		}
         	defender = gamestate.getDefender();
         	attacker = gamestate.getAttacker();
-//		while(defender.handSize() < 4 || attacker.handSize() < 4){
-//			if(defender.handSize() < 4){
-//				defender.addtoHand(deck.drawLast());
-//			}
-//			if(attacker.handSize() < 4){
-//				attacker.addtoHand(deck.drawLast());
-//			}
-//		}
 		if(validAttack(chosenCards)){
 			int pos = 2; //TODO remove hardcodes
 			for(Card card : chosenCards){
@@ -69,17 +61,11 @@ public class GameController{
 			}
 			gamestate.setRiverCards(chosenCards);
 			attacker.removeAll(chosenCards);
+			switchPlaces(attacker, defender);
 
 			gamestate.setRoundState(RoundState.DEFENDING);
 
 			chosenCards.clear();
-			for(Card card : gamestate.getCurrentPlayer().getHand()){
-				card.setY(card.getY() - 4f);
-			}
-			for(Card card : gamestate.getNextPlayer().getHand()){
-				card.setY(card.getY() + 4f);
-			}
-
 			// TODO fix ugly code
 		}
 	}
@@ -114,23 +100,28 @@ public class GameController{
 			card.moveTo(Position.CURRENT_HAND.x + 4, Position.CURRENT_HAND.y, 0.3f, 0);
 		}
 		defender.removeAll(chosenCards);
+		switchPlaces(defender, attacker);
 		dealCards(gamestate.getRiverCards().size());
 		gamestate.clearRiver();
 		chosenCards.clear();
 		gamestate.setPass(false);
 
 		// TODO FIX GARBAGE CODE
-		for(Card card : defender.getHand()){
-			card.setY(card.getY() + 4);
-		}
-		for(Card card : attacker.getHand()){
-			card.setY(card.getY() - 4);
-		}
 
 		// TODO FIX GARBAGE CODE
 	}
 
 
+	private void switchPlaces(Player defender, Player attacker){
+		for(Card card : defender.getHand()){
+			card.turn();
+			card.setY(card.getY() + 4);
+		}
+		for(Card card : attacker.getHand()){
+			card.turn();
+			card.setY(card.getY() - 4);
+		}
+	}
 	private boolean validAttack(List<Card> hand){
 		if(gamestate.getRoundState() == RoundState.ATTACKING){
 			if(!Card.checkSuits(hand)){
@@ -173,13 +164,14 @@ public class GameController{
 		for(int i = 0 ; i < count ; i++){
 			for(Player player : players){
 				Card lastCard = deck.drawLast();
-				lastCard.turn(false);
 				player.addtoHand(lastCard);
 				if(player == gamestate.getCurrentPlayer()){
+					lastCard.turn(false);
 					lastCard.moveTo(Position.CURRENT_HAND.x + player.getSlot(lastCard), Position.CURRENT_HAND.y, 0.5f,delay); //Remove hardcodes
 					delay += 0.1f;
 				}
 				else{
+					lastCard.turn(true);
 					lastCard.moveTo(Position.OPPONENT_HAND.x + player.getSlot(lastCard), Position.OPPONENT_HAND.y, 0.5f,delay); //Remove hardcodes
 					delay += 0.1f;
 				}
