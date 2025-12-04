@@ -9,6 +9,7 @@ public class Player{
 	private List<Card> hand = new ArrayList<Card>(4);
 	private List<Card> wonCards = new ArrayList<Card>();
 	private Card[] handSlots = new Card[4];
+	private int points;
 
 	public Player(){
 		player = nextPlayer;
@@ -34,6 +35,11 @@ public class Player{
 	public void addWonCards(List<Card> cards){
 		wonCards.addAll(cards);
 	}
+
+	public List<Card> getAllWonCards(){
+		return wonCards;
+	}
+
 	public void remove(Card card){
 		removeSlot(card);
 		hand.remove(card);
@@ -50,6 +56,10 @@ public class Player{
 
 	public int handSize(){
 		return hand.size();
+	}
+
+	public void addPoints(int points){
+		this.points += points;
 	}
 
 	private void removeSlot(Card... cards){

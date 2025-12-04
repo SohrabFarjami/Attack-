@@ -66,6 +66,10 @@ public class Card{
 		return true;
 	}
 
+	public int getPoints(){
+		return pip.points;
+	}
+
     public void setPosition(float x,float y){
 	    this.x = x;
 	    this.y = y;

@@ -58,14 +58,8 @@ public class Game implements ApplicationListener {
         button = new Rectangle(6f,1f,0.7f,0.2f);
         passButton = new Rectangle(6f,1.5f,0.7f,0.2f);
 	
-	float i = 2f;
-	float distanceMargin = 0.02f;
-	for(Card card : gameController.getDeck().getAll()){
-		card.setPosition(6f, i);
-		i += distanceMargin;
-	}
 	gameState.getTrumpCard().rotate90(false);
-	gameState.getTrumpCard().setPosition(6f - 9f/64f - 10f/64f, 2f - (9f/64f) + distanceMargin);
+	gameState.getTrumpCard().setPosition(6f - 9f/64f - 10f/64f, 2f - (9f/64f) + 0.02f); //Todo remove this implementation
 	gameState.getTrumpCard().turn(false);
    }
 
@@ -79,17 +73,18 @@ public class Game implements ApplicationListener {
         if(Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)){
             touchPos.set(Gdx.input.getX(),Gdx.input.getY());
             viewport.unproject(touchPos);
-            for(Card card : currentPlayer.getHand()){
+
+            for(Card card : gameState.getCurrentPlayer().getHand()){
                 if(card.getBoundingRectangle().contains(touchPos)){
-                    	gameController.clickCard(card);
+                    	gameController.clickCard(card); //TODO move to controller
                 }
             }
 
             if(button.contains(touchPos)){
-                System.out.println("Play Round!");
 		gameController.playRound();
 		currentPlayer = gameState.getCurrentPlayer();
             }
+
 	    if(gameState.getRoundState() == RoundState.DEFENDING){
 		    if(passButton.contains(touchPos)){
 			gameController.clickPass();
@@ -104,26 +99,29 @@ public class Game implements ApplicationListener {
    }
 
    private void draw(){
-	   float delta = Gdx.graphics.getDeltaTime();
+    float delta = Gdx.graphics.getDeltaTime();
     ScreenUtils.clear(Color.BLACK);
     viewport.apply();
 
     spriteBatch.setProjectionMatrix(viewport.getCamera().combined);
     shapeRenderer.setProjectionMatrix(viewport.getCamera().combined);
 
-    spriteBatch.begin();
+    spriteBatch.begin(); //Move these to a ui manager
     font.draw(spriteBatch, "Player " + gameState.getCurrentPlayer().getPlayer() + "'s turn", 3, 3);
     font.draw(spriteBatch,gameState.getRoundState().toString(), 4, 3);
     font.draw(spriteBatch,"Trump Card",7,4);
     gameState.getTrumpCard().draw(spriteBatch);
 
+
     for(Card card : cards){
-	    card.draw(spriteBatch); // TODO make this the only draw call
+	    card.draw(spriteBatch);
 	    card.update(delta);
     }
 
     spriteBatch.end();
 
+
+    //Deubugging stuff
     shapeRenderer.begin(ShapeType.Filled);
     shapeRenderer.setColor(Color.RED);
     shapeRenderer.rect(button.x,button.y,button.width,button.height);

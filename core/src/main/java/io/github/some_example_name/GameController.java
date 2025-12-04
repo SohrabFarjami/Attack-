@@ -34,19 +34,23 @@ public class GameController{
 	}
 
 	public void startGame(){
+		SpriteController.stackDeck(0.02f, deck);
 		gamestate.setTrumpCard(deck.get(1));
 		trumpCard = gamestate.getTrumpCard();
 		dealCards(4);
 	}
 
-		//System.out.printf("The starting player is Player %s %n",attacker.getPlayer()); maybe later add with names
 	public void playRound(){
 		if(gamestate.getRoundState() == RoundState.ATTACKING){
 			attack();
 		}else{
 			defend();
 		}
+		if(gamestate.getCurrentPlayer().getHand().size() == 0){
+			endGame();
+		}
 	}
+
 
 	public void attack(){
 		if(chosenCards.isEmpty()){
@@ -93,6 +97,7 @@ public class GameController{
 		}
 		else if(gamestate.getPass()){
 			attacker.addWonCards(wonCards);;
+			switchPlaces(defender, attacker);
 		}
 		gamestate.setRoundState(RoundState.ATTACKING);
 		for(Card card : wonCards){
@@ -100,7 +105,6 @@ public class GameController{
 			card.moveTo(Position.CURRENT_HAND.x + 4, Position.CURRENT_HAND.y, 0.3f, 0);
 		}
 		defender.removeAll(chosenCards);
-		switchPlaces(defender, attacker);
 		dealCards(gamestate.getRiverCards().size());
 		gamestate.clearRiver();
 		chosenCards.clear();
@@ -109,6 +113,20 @@ public class GameController{
 		// TODO FIX GARBAGE CODE
 
 		// TODO FIX GARBAGE CODE
+	}
+
+	public void endGame(){
+		float x = 2; //Fix these placeholders
+		for(Player player : players){
+			float i = 0;
+			for(Card card : player.getAllWonCards()){
+				card.turn(false);
+				card.moveTo(x, 2, 0.2f, i);
+				i += 0.3f;
+				player.addPoints(card.getPoints());
+			}
+			x++;
+		}
 	}
 
 
@@ -161,7 +179,7 @@ public class GameController{
 
 	public void dealCards(int count){
 		float delay = 0;
-		for(int i = 0 ; i < count ; i++){
+		for(int i = 0 ; i < Math.min(count, deck.size()/2) ; i++){
 			for(Player player : players){
 				Card lastCard = deck.drawLast();
 				player.addtoHand(lastCard);
@@ -175,20 +193,17 @@ public class GameController{
 					lastCard.moveTo(Position.OPPONENT_HAND.x + player.getSlot(lastCard), Position.OPPONENT_HAND.y, 0.5f,delay); //Remove hardcodes
 					delay += 0.1f;
 				}
+				if(lastCard == trumpCard){
+					lastCard.rotate90(true); //TODO fix this is not efficient
+				}
+				if(deck.size() == 0){
+					trumpCard = lastCard;
+					lastCard.turn(false);
+				}
 			}
 		}
 	}
 
-	public void printCards(List<Card> cards, boolean printWithNewLine, boolean printNumbered){
-		int index = 0;
-		for(Card card : cards){
-			if(printNumbered){
-				System.out.printf("[%d] ",index++);
-			}
-			System.out.print(card);
-				System.out.println();
-			}
-		}
 
     public List<Card> getChosenCards(){
         return chosenCards;
