@@ -9,12 +9,18 @@ public class GameState{
         DEFENDING,
     }
 
+    public enum RoundPhase{
+	    PLAYER_TURN,
+	    ANIMATION
+    }
+
     private boolean pass = false;;
     private Player attacker;
     private Player defender;
     private RoundState roundState = RoundState.ATTACKING;
     private Card trumpCard;
     private List<Card> riverCards = new ArrayList<>();
+    private RoundPhase roundPhase;
 
     public GameState(Player attacker, Player defender){
         this.attacker = attacker;
@@ -86,6 +92,11 @@ public class GameState{
     }
     public boolean getPass(){
 	return pass;
+    }
+
+
+    public void setRoundPhase(RoundPhase roundPhase){
+	    this.roundPhase = roundPhase;
     }
 
 

@@ -8,6 +8,8 @@ import java.util.List;
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 
+import io.github.some_example_name.AnimationController.WaitType;
+import io.github.some_example_name.GameState.RoundPhase;
 import io.github.some_example_name.GameState.RoundState;
 
 
@@ -24,9 +26,10 @@ public class GameController{
 	private Card trumpCard;
     	private List<Card> chosenCards = new ArrayList<>();
     	private final GameState gamestate;
+	private final AnimationController animationController;
 
-	
 	public GameController(TextureAtlas atlas){
+		animationController = new AnimationController();
 		Collections.shuffle(players);
 		gamestate = new GameState(players.get(0), players.get(1));
 		deck = new Deck(true,atlas);
@@ -61,7 +64,7 @@ public class GameController{
 		if(validAttack(chosenCards)){
 			int pos = 2; //TODO remove hardcodes
 			for(Card card : chosenCards){
-				card.moveTo(pos++, 2, 0.1f, 0);
+				animationController.moveCardTo(pos++, 2, 0.1f,0.1f,card,WaitType.WAIT_START);
 			}
 			gamestate.setRiverCards(chosenCards);
 			attacker.removeAll(chosenCards);
@@ -78,6 +81,7 @@ public class GameController{
 		List<Card> wonCards = new ArrayList<>();
         	defender = gamestate.getDefender();
         	attacker = gamestate.getAttacker();
+		Player winner = attacker;
 
 		wonCards.addAll(chosenCards);
 		wonCards.addAll(gamestate.getRiverCards());
@@ -92,17 +96,18 @@ public class GameController{
 				return;
 			}
 			defender.removeAll(chosenCards);
-			defender.addWonCards(wonCards);
+			winner = defender;
 			gamestate.switchRoles();
 		}
 		else if(gamestate.getPass()){
-			attacker.addWonCards(wonCards);;
 			switchPlaces(defender, attacker);
 		}
+		winner.addWonCards(wonCards);
 		gamestate.setRoundState(RoundState.ATTACKING);
+		gamestate.setRoundPhase(RoundPhase.ANIMATION);
 		for(Card card : wonCards){
 			card.turn(true);
-			card.moveTo(Position.CURRENT_HAND.x + 4, Position.CURRENT_HAND.y, 0.3f, 0);
+			animationController.moveCardTo(Position.CURRENT_HAND.x + 4, (winner == defender) ? 0 : 4 , 0.1f,0.1f,card, WaitType.WAIT_START); //Comeup with better logic
 		}
 		defender.removeAll(chosenCards);
 		dealCards(gamestate.getRiverCards().size());
@@ -110,19 +115,14 @@ public class GameController{
 		chosenCards.clear();
 		gamestate.setPass(false);
 
-		// TODO FIX GARBAGE CODE
-
-		// TODO FIX GARBAGE CODE
 	}
 
 	public void endGame(){
 		float x = 2; //Fix these placeholders
 		for(Player player : players){
-			float i = 0;
 			for(Card card : player.getAllWonCards()){
 				card.turn(false);
-				card.moveTo(x, 2, 0.2f, i);
-				i += 0.3f;
+				animationController.moveCardTo(x, 2, 0.1f,1f,card,WaitType.WAIT_START);
 				player.addPoints(card.getPoints());
 			}
 			x++;
@@ -133,11 +133,11 @@ public class GameController{
 	private void switchPlaces(Player defender, Player attacker){
 		for(Card card : defender.getHand()){
 			card.turn();
-			card.setY(card.getY() + 4);
+			animationController.moveCardTo(card.getX(), card.getY() + 4, 0f, 1f, card, WaitType.NO_WAIT);
 		}
 		for(Card card : attacker.getHand()){
 			card.turn();
-			card.setY(card.getY() - 4);
+			animationController.moveCardTo(card.getX(), card.getY() - 4, 0f, 1f, card, WaitType.NO_WAIT);
 		}
 	}
 	private boolean validAttack(List<Card> hand){
@@ -178,20 +178,17 @@ public class GameController{
 	}
 
 	public void dealCards(int count){
-		float delay = 0;
 		for(int i = 0 ; i < Math.min(count, deck.size()/2) ; i++){
 			for(Player player : players){
 				Card lastCard = deck.drawLast();
 				player.addtoHand(lastCard);
 				if(player == gamestate.getCurrentPlayer()){
 					lastCard.turn(false);
-					lastCard.moveTo(Position.CURRENT_HAND.x + player.getSlot(lastCard), Position.CURRENT_HAND.y, 0.5f,delay); //Remove hardcodes
-					delay += 0.1f;
+					animationController.moveCardTo(Position.CURRENT_HAND.x + player.getSlot(lastCard), Position.CURRENT_HAND.y, 0.5f,0.1f, lastCard, WaitType.WAIT_START); //Remove hardcodes
 				}
 				else{
 					lastCard.turn(true);
-					lastCard.moveTo(Position.OPPONENT_HAND.x + player.getSlot(lastCard), Position.OPPONENT_HAND.y, 0.5f,delay); //Remove hardcodes
-					delay += 0.1f;
+					animationController.moveCardTo(Position.OPPONENT_HAND.x + player.getSlot(lastCard), Position.OPPONENT_HAND.y, 0.5f,0.1f,lastCard, WaitType.WAIT_START); //Remove hardcodes
 				}
 				if(lastCard == trumpCard){
 					lastCard.rotate90(true); //TODO fix this is not efficient
@@ -235,6 +232,10 @@ public class GameController{
 
     public Deck getDeck(){
 	return deck;
+    }
+
+    public AnimationController getAnimationController(){
+	    return animationController;
     }
 
 

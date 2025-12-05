@@ -36,6 +36,8 @@ public class Game implements ApplicationListener {
     Rectangle passButton;
     Sprite sprite;
     List<Card> cards;
+    AnimationController animationController;
+
    public void create () {
         font = new BitmapFont();
         spriteBatch = new SpriteBatch();
@@ -44,6 +46,7 @@ public class Game implements ApplicationListener {
 	cards = new ArrayList<>(gameController.getDeck().getAll());
 	gameController.startGame();
         gameState = gameController.getGameState();
+	animationController = gameController.getAnimationController();
         viewport = new FitViewport(8, 5);
         touchPos = new Vector2();
 
@@ -115,8 +118,9 @@ public class Game implements ApplicationListener {
 
     for(Card card : cards){
 	    card.draw(spriteBatch);
-	    card.update(delta);
     }
+
+    animationController.update(delta);
 
     spriteBatch.end();
 
