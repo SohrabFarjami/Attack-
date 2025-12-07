@@ -37,6 +37,7 @@ public class Game implements ApplicationListener {
     Sprite sprite;
     List<Card> cards;
     AnimationController animationController;
+    boolean clicked = false; //Remove this later
 
    public void create () {
         font = new BitmapFont();
@@ -56,13 +57,12 @@ public class Game implements ApplicationListener {
 
         shapeRenderer = new ShapeRenderer();
 
-        gameState.getTrumpCard().setPosition(7, 3);
 
         button = new Rectangle(6f,1f,0.7f,0.2f);
         passButton = new Rectangle(6f,1.5f,0.7f,0.2f);
 	
 	gameState.getTrumpCard().rotate90(false);
-	gameState.getTrumpCard().setPosition(6f - 9f/64f - 10f/64f, 2f - (9f/64f) + 0.02f); //Todo remove this implementation
+	gameState.getTrumpCard().setPosition(Position.DECK.x - 9f/64f - 10f/64f, 2f - (9f/64f) + 0.02f); //Todo remove this implementation
 	gameState.getTrumpCard().turn(false);
    }
 
@@ -74,6 +74,7 @@ public class Game implements ApplicationListener {
 
    private void input(){
         if(Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)){
+		clicked = true;
             touchPos.set(Gdx.input.getX(),Gdx.input.getY());
             viewport.unproject(touchPos);
 
@@ -95,6 +96,18 @@ public class Game implements ApplicationListener {
 	    }
         }
 
+	if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)){
+            touchPos.set(Gdx.input.getX(),Gdx.input.getY());
+            viewport.unproject(touchPos);
+		gameController.drag(touchPos);
+	}else{
+		if(clicked){
+			clicked = false;
+			gameController.releaseDrag();
+		}
+	}
+
+
 
    }
 
@@ -110,12 +123,15 @@ public class Game implements ApplicationListener {
     shapeRenderer.setProjectionMatrix(viewport.getCamera().combined);
 
     spriteBatch.begin(); //Move these to a ui manager
-    font.draw(spriteBatch, "Player " + gameState.getCurrentPlayer().getPlayer() + "'s turn", 3, 3);
-    font.draw(spriteBatch,gameState.getRoundState().toString(), 4, 3);
-    font.draw(spriteBatch,"Trump Card",7,4);
+    //font.draw(spriteBatch, "Player " + gameState.getCurrentPlayer().getPlayer() + "'s turn", 3, 3);
+    //font.draw(spriteBatch,gameState.getRoundState().toString(), 4, 3);
     gameState.getTrumpCard().draw(spriteBatch);
 
-
+    for(int x = 0; x < 8; x++){
+	    for(int y = 0; y < 5; y++){
+		    font.draw(spriteBatch, "(" + x + "," + y + ")", x,y);
+	    }
+    }
     for(Card card : cards){
 	    card.draw(spriteBatch);
     }
@@ -143,6 +159,7 @@ public class Game implements ApplicationListener {
     }
     shapeRenderer.end();
    }
+
 
    public void resize (int width, int height) {
        viewport.update(width,height,true);

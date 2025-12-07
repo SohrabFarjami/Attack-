@@ -3,9 +3,10 @@ package io.github.some_example_name;
 
 
 public enum Position{
-	DECK(6f,2f),
+	DECK(7f,2f),
 	CURRENT_HAND(2f,0f),
-	OPPONENT_HAND(2f,4f);
+	OPPONENT_HAND(2f,4f),
+	RIVER(2f,2f);
 
 	public final float x;
 	public final float y;
@@ -14,4 +15,5 @@ public enum Position{
 		this.x = x;
 		this.y = y;
 	}
+
 }

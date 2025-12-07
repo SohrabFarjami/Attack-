@@ -26,21 +26,26 @@ public class AnimationController{
 		timeSinceLastStart += delta;
 		AnimationInterface nextAnimation = animationQueue.peek();
 		if(nextAnimation != null){
-			if(timeSinceLastStart >	nextAnimation.getDelay() || nextAnimation.getWaitType() == WaitType.NO_WAIT){
+			if(nextAnimation.getWaitType() == WaitType.WAIT_END){
+				if(activeAnimations.isEmpty()){
+					activeAnimations.add(animationQueue.poll());
+					timeSinceLastStart = 0;
+				}
+			}else if(nextAnimation.getWaitType() == WaitType.WAIT_START){
+				if(timeSinceLastStart >= nextAnimation.getDelay()){
+					activeAnimations.add(animationQueue.poll());
+					timeSinceLastStart = 0;
+				}}
+			else if(nextAnimation.getWaitType() == WaitType.NO_WAIT){
 				activeAnimations.add(animationQueue.poll());
 				timeSinceLastStart = 0;
 			}
 		}
 
 		for(AnimationInterface activeAnimation : activeAnimations){
-			if(activeAnimation != null){
-				activeAnimation.update(delta);
-
-				if(activeAnimation.isFinished() == true){
-					activeAnimation = null;
-				}
-			}
+			activeAnimation.update(delta);
 		}
+		activeAnimations.removeIf(activeAnimation -> activeAnimation.isFinished());
 
 	}
 }

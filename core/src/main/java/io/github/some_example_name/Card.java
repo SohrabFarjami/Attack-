@@ -5,6 +5,7 @@ import java.util.List;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 
 public class Card{
 	private final Suit suit;
@@ -55,6 +56,11 @@ public class Card{
     public void setPosition(float x,float y){
 	    this.x = x;
 	    this.y = y;
+    }
+
+    public void setPosition(Vector2 position){
+	    this.x = position.x;
+	    this.y = position.y;
     }
     public void turn(){
 	    turned = !turned;

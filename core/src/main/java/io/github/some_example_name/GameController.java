@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.math.Vector2;
 
 import io.github.some_example_name.AnimationController.WaitType;
 import io.github.some_example_name.GameState.RoundPhase;
@@ -27,6 +28,9 @@ public class GameController{
     	private List<Card> chosenCards = new ArrayList<>();
     	private final GameState gamestate;
 	private final AnimationController animationController;
+	
+	private Card clickedCard;
+	private Vector2 clickedCardInitialPosition;
 
 	public GameController(TextureAtlas atlas){
 		animationController = new AnimationController();
@@ -107,7 +111,7 @@ public class GameController{
 		gamestate.setRoundPhase(RoundPhase.ANIMATION);
 		for(Card card : wonCards){
 			card.turn(true);
-			animationController.moveCardTo(Position.CURRENT_HAND.x + 4, (winner == defender) ? 0 : 4 , 0.1f,0.1f,card, WaitType.WAIT_START); //Comeup with better logic
+			animationController.moveCardTo(Position.CURRENT_HAND.x + 4, (winner == defender) ? 0 : 4 , 5f,1f,card, WaitType.WAIT_START); //Comeup with better logic
 		}
 		defender.removeAll(chosenCards);
 		dealCards(gamestate.getRiverCards().size());
@@ -133,11 +137,11 @@ public class GameController{
 	private void switchPlaces(Player defender, Player attacker){
 		for(Card card : defender.getHand()){
 			card.turn();
-			animationController.moveCardTo(card.getX(), card.getY() + 4, 0f, 1f, card, WaitType.NO_WAIT);
+			animationController.moveCardTo(card.getX(), card.getY() + 4, 0f, 0f, card, WaitType.WAIT_END);
 		}
 		for(Card card : attacker.getHand()){
 			card.turn();
-			animationController.moveCardTo(card.getX(), card.getY() - 4, 0f, 1f, card, WaitType.NO_WAIT);
+			animationController.moveCardTo(card.getX(), card.getY() - 4, 0f, 0f, card, WaitType.WAIT_END);
 		}
 	}
 	private boolean validAttack(List<Card> hand){
@@ -211,15 +215,35 @@ public class GameController{
     }
 
     public void clickCard(Card chosenCard){
-        if(chosenCards.contains(chosenCard)){
-		chosenCards.remove(chosenCard);
-		chosenCard.setY(chosenCard.getY() - 0.1f);
-        }else{
-		chosenCards.add(chosenCard);
-		chosenCard.setY(chosenCard.getY() + 0.1f);
+//        if(chosenCards.contains(chosenCard)){
+//		chosenCards.remove(chosenCard);
+//		chosenCard.setY(chosenCard.getY() - 0.1f);
+//        }else{
+//		chosenCards.add(chosenCard);
+//		chosenCard.setY(chosenCard.getY() + 0.1f);
+	clickedCard = chosenCard;
+	clickedCardInitialPosition = new Vector2(chosenCard.getX(), chosenCard.getY());
 	} //TODO remove hardcodes and maybe add animation
 
+    public void drag(Vector2 touchpos){
+	    if(clickedCard != null){
+		    clickedCard.setPosition(touchpos.x - 0.5f, touchpos.y - 0.5f);
+	    }
+    }
 
+    public void releaseDrag(){
+	    Vector2 card = new Vector2(clickedCard.getX(), clickedCard.getY());
+	    for(int i = 0; i < 4; i++){
+		    Vector2 river = new Vector2(Position.RIVER.x + i, Position.RIVER.y);
+		    if(river.dst(card) <= 1f){
+			    clickedCard.setPosition(river);
+			    clickedCard = null;
+			    return;
+		    }
+		    System.out.printf("Distance is %f %n",river.dst(card));
+	    }
+	    clickedCard.setPosition(clickedCardInitialPosition);
+	    clickedCard = null;
     }
 
     public void clickPass(){
