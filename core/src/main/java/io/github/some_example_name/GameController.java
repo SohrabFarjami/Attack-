@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+// import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector2;
 
 import io.github.some_example_name.AnimationController.WaitType;
@@ -16,8 +17,9 @@ import io.github.some_example_name.GameState.RoundState;
 
 
 public class GameController{
-	private final Player p1 = new Player();
-	private final Player p2 = new Player();
+	private final Player p1 = new Player(4,Vector2.Zero);
+	private final Player p2 = new Player(4,Vector2.Zero);
+
 	private List<Player> players = Arrays.asList(p1,p2);
 
     	private Player attacker;
@@ -36,6 +38,8 @@ public class GameController{
 		animationController = new AnimationController();
 		Collections.shuffle(players);
 		gamestate = new GameState(players.get(0), players.get(1));
+		p1.setHandPosition(Position.CURRENT_HAND.position);
+		p2.setHandPosition(Position.OPPONENT_HAND.position);
 		deck = new Deck(true,atlas);
 
 	}
@@ -188,12 +192,11 @@ public class GameController{
 				player.addtoHand(lastCard);
 				if(player == gamestate.getCurrentPlayer()){
 					lastCard.turn(false);
-					animationController.moveCardTo(Position.CURRENT_HAND.x + player.getSlot(lastCard), Position.CURRENT_HAND.y, 0.5f,0.1f, lastCard, WaitType.WAIT_START); //Remove hardcodes
 				}
 				else{
 					lastCard.turn(true);
-					animationController.moveCardTo(Position.OPPONENT_HAND.x + player.getSlot(lastCard), Position.OPPONENT_HAND.y, 0.5f,0.1f,lastCard, WaitType.WAIT_START); //Remove hardcodes
 				}
+				animationController.moveCardTo(player.getCardSlotPosition(lastCard), 0.5f,0.1f,lastCard, WaitType.WAIT_START); //Remove hardcodes
 				if(lastCard == trumpCard){
 					lastCard.rotate90(true); //TODO fix this is not efficient
 				}
@@ -232,6 +235,9 @@ public class GameController{
     }
 
     public void releaseDrag(){
+	    if(clickedCard == null){
+		    return;
+	    }
 	    Vector2 card = new Vector2(clickedCard.getX(), clickedCard.getY());
 	    for(int i = 0; i < 4; i++){
 		    Vector2 river = new Vector2(Position.RIVER.x + i, Position.RIVER.y);

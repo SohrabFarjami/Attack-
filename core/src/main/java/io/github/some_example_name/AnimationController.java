@@ -5,6 +5,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
+import com.badlogic.gdx.math.Vector2;
+
 public class AnimationController{
 
 	public enum WaitType{
@@ -17,11 +19,14 @@ public class AnimationController{
 	List<AnimationInterface> activeAnimations = new ArrayList<>();
 	float timeSinceLastStart = 0;
 
-	public void moveCardTo(float targetX, float targetY, float duration, float delay, Card card, WaitType waitType){
-		MoveCardAnimation moveCardAnimation = new MoveCardAnimation(targetX, targetY, duration, delay, card, waitType);
-		animationQueue.add(moveCardAnimation);
+	public void moveCardTo(Vector2 targetPosition, float duration, float delay, Card card, WaitType waitType){
+		moveCardTo(targetPosition.x, targetPosition.y, duration, delay, card, waitType);
 	}
 
+	public void moveCardTo(float targetX, float targetY, float duration, float delay, Card card, WaitType waitType){
+		MoveCardAnimation moveCardAnimation = new MoveCardAnimation(targetX,targetY, duration, delay, card, waitType); //Later make this also accept vector
+		animationQueue.add(moveCardAnimation);
+	}
 	public void update(float delta){
 		timeSinceLastStart += delta;
 		AnimationInterface nextAnimation = animationQueue.peek();
