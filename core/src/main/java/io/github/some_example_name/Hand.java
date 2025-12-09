@@ -20,8 +20,8 @@ public class Hand{
 		}
 	}
 
-	public List<Card> getHand(){
-		List<Card> hand = new ArrayList<>();
+	public Array<Card> getHand(){
+		Array<Card> hand = new Array<>(4);
 		for(Slot slot : slots){
 			if(slot.hasCard()){
 				hand.add(slot.getCard());
@@ -39,6 +39,14 @@ public class Hand{
 
 	}
 
+	public Slot getFirstEmptySlot(){
+		for(Slot slot : slots){
+			if(!slot.hasCard()){
+				return slot;
+			}
+		}
+		return null;
+	}
 	public void addCard(Card card){
 		for(Slot slot : slots){
 			if(!slot.hasCard()){
@@ -47,6 +55,11 @@ public class Hand{
 			}
 		}
 	}
+
+	public Array<Slot> getSlots(){
+		return slots;
+	}
+
 
 	public void remove(Card card){
 		for(Slot slot : slots){

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 
 public class Player{
 	private static int nextPlayer = 1;
@@ -41,6 +42,15 @@ public class Player{
 		wonCards.addAll(cards);
 	}
 
+	public Slot getFirstEmptySlot(){
+		return hand.getFirstEmptySlot();
+	}
+
+	public Array<Slot> getSlots(){
+		return hand.getSlots();
+	}
+
+
 	public List<Card> getAllWonCards(){
 		return wonCards;
 	}
@@ -51,7 +61,7 @@ public class Player{
 	public void removeAll(List<Card> cards){
 		hand.removeAll(cards);
 	}
-	public List<Card> getHand(){
+	public Array<Card> getHand(){
 		return hand.getHand();
 	}
 

@@ -62,6 +62,11 @@ public class Card{
 	    this.x = position.x;
 	    this.y = position.y;
     }
+
+    public Vector2 getPosition(){
+	    return new Vector2(x,y);
+    }
+
     public void turn(){
 	    turned = !turned;
     }
@@ -94,8 +99,6 @@ public class Card{
     public Rectangle getBoundingRectangle(){
         return new Rectangle(x, y, width, height);
     }
-
-
 
 
     public void setX(float x){

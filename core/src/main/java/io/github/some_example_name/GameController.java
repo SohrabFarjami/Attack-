@@ -9,6 +9,7 @@ import java.util.List;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 // import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 
 import io.github.some_example_name.AnimationController.WaitType;
 import io.github.some_example_name.GameState.RoundPhase;
@@ -32,14 +33,18 @@ public class GameController{
 	private final AnimationController animationController;
 	
 	private Card clickedCard;
-	private Vector2 clickedCardInitialPosition;
+	private River river = new River(Position.RIVER.position, 4);
 
 	public GameController(TextureAtlas atlas){
 		animationController = new AnimationController();
 		Collections.shuffle(players);
-		gamestate = new GameState(players.get(0), players.get(1));
-		p1.setHandPosition(Position.CURRENT_HAND.position);
-		p2.setHandPosition(Position.OPPONENT_HAND.position);
+		Array<Slot> totalSlots = new Array<Slot>(12);
+		totalSlots.addAll(river.getSlots());
+		totalSlots.addAll(p1.getSlots());
+		totalSlots.addAll(p2.getSlots());
+		gamestate = new GameState(players.get(0), players.get(1),totalSlots);
+		players.get(0).setHandPosition(Position.CURRENT_HAND.position);
+		players.get(1).setHandPosition(Position.OPPONENT_HAND.position);
 		deck = new Deck(true,atlas);
 
 	}
@@ -57,7 +62,7 @@ public class GameController{
 		}else{
 			defend();
 		}
-		if(gamestate.getCurrentPlayer().getHand().size() == 0){
+		if(gamestate.getCurrentPlayer().getHand().size == 0){
 			endGame();
 		}
 	}
@@ -217,20 +222,22 @@ public class GameController{
         return gamestate;
     }
 
-    public void clickCard(Card chosenCard){
-//        if(chosenCards.contains(chosenCard)){
-//		chosenCards.remove(chosenCard);
-//		chosenCard.setY(chosenCard.getY() - 0.1f);
-//        }else{
-//		chosenCards.add(chosenCard);
-//		chosenCard.setY(chosenCard.getY() + 0.1f);
-	clickedCard = chosenCard;
-	clickedCardInitialPosition = new Vector2(chosenCard.getX(), chosenCard.getY());
-	} //TODO remove hardcodes and maybe add animation
-
     public void drag(Vector2 touchpos){
 	    if(clickedCard != null){
 		    clickedCard.setPosition(touchpos.x - 0.5f, touchpos.y - 0.5f);
+	    }
+    }
+
+    public void click(Vector2 touchpos){
+	    Array<Card> validCards = new Array<>(4); //maybe remove hardcode if adding more card games in future
+	    validCards.addAll(gamestate.getCurrentPlayer().getHand());
+	    validCards.addAll(river.getCards());
+
+	    for(Card card : validCards){
+		    if(card.getBoundingRectangle().contains(touchpos)){
+			    clickedCard = card;
+			    return;
+		    };
 	    }
     }
 
@@ -238,17 +245,26 @@ public class GameController{
 	    if(clickedCard == null){
 		    return;
 	    }
-	    Vector2 card = new Vector2(clickedCard.getX(), clickedCard.getY());
-	    for(int i = 0; i < 4; i++){
-		    Vector2 river = new Vector2(Position.RIVER.x + i, Position.RIVER.y);
-		    if(river.dst(card) <= 1f){
-			    clickedCard.setPosition(river);
+
+	    Player player = gamestate.getCurrentPlayer();
+
+	    Array<Slot> riverSlots = river.getEmptySlots();
+
+
+	    for(Slot slot : riverSlots){
+		    if(slot.getPosition().cpy().add(0.5f,0.5f).dst(clickedCard.getPosition()) <= 1f){
+			    player.remove(clickedCard);
+			    river.removeCard(clickedCard);
+
+			    slot.setCard(clickedCard);
 			    clickedCard = null;
 			    return;
 		    }
-		    System.out.printf("Distance is %f %n",river.dst(card));
 	    }
-	    clickedCard.setPosition(clickedCardInitialPosition);
+
+	    river.removeCard(clickedCard);
+	    player.addtoHand(clickedCard);
+
 	    clickedCard = null;
     }
 

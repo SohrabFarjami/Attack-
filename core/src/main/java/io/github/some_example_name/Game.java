@@ -78,11 +78,7 @@ public class Game implements ApplicationListener {
             touchPos.set(Gdx.input.getX(),Gdx.input.getY());
             viewport.unproject(touchPos);
 
-            for(Card card : gameState.getCurrentPlayer().getHand()){
-                if(card.getBoundingRectangle().contains(touchPos)){
-                    	gameController.clickCard(card); //TODO move to controller
-                }
-            }
+	    gameController.click(touchPos); //TODO move to controller
 
             if(button.contains(touchPos)){
 		gameController.playRound();

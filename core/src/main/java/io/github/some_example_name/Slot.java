@@ -10,9 +10,14 @@ public class Slot{
 		this.position = position;
 	}
 
+	Slot(float x, float y){
+		this(new Vector2(x,y));
+	}
+
 	public boolean setCard(Card card){
 		boolean wasEmpty = activeCard == null;
 		activeCard = card;
+		activeCard.setPosition(position);
 		return wasEmpty;
 	}
 

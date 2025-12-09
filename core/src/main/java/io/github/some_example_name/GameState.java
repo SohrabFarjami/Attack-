@@ -3,6 +3,8 @@ package io.github.some_example_name;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.badlogic.gdx.utils.Array;
+
 public class GameState{
     public enum RoundState{
         ATTACKING,
@@ -21,10 +23,12 @@ public class GameState{
     private Card trumpCard;
     private List<Card> riverCards = new ArrayList<>();
     private RoundPhase roundPhase;
+    private final Array<Slot> slots;
 
-    public GameState(Player attacker, Player defender){
+    public GameState(Player attacker, Player defender, Array<Slot> slots){
         this.attacker = attacker;
         this.defender = defender;
+	this.slots = slots;
     }
 
     public Player getDefender(){
@@ -69,8 +73,13 @@ public class GameState{
         this.trumpCard = trumpCard;
     }
 
+
     public List<Card> getRiverCards(){
 	return riverCards;
+    }
+
+    public Array<Slot> getSlots(){
+	    return slots;
     }
 
     public void setRiverCards(List<Card> cards){
