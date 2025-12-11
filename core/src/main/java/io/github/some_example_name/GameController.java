@@ -251,18 +251,27 @@ public class GameController{
 	    Array<Slot> riverSlots = river.getEmptySlots();
 
 
-	    for(Slot slot : riverSlots){
-		    if(slot.getPosition().cpy().add(0.5f,0.5f).dst(clickedCard.getPosition()) <= 1f){
-			    player.remove(clickedCard);
-			    river.removeCard(clickedCard);
+	    float minDistance = 2f;
+	    Slot minSlot = null;
 
-			    slot.setCard(clickedCard);
-			    clickedCard = null;
-			    return;
-		    }
+	    for(Slot slot : riverSlots){
+		    float distanceBetweenSlots = slot.getPosition().dst(clickedCard.getPosition());
+		    if(distanceBetweenSlots <= minDistance){
+			    minDistance = distanceBetweenSlots;
+			    minSlot = slot;
+		    };
+	    }
+	    if(minDistance <= 1f){ //Change logic to check min distance and then set it to that
+		    player.remove(clickedCard);
+		    river.removeCard(clickedCard);
+
+		    minSlot.setCard(clickedCard);
+		    clickedCard = null;
+		    return;
 	    }
 
 	    river.removeCard(clickedCard);
+	    player.remove(clickedCard);
 	    player.addtoHand(clickedCard);
 
 	    clickedCard = null;
