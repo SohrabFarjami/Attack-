@@ -19,7 +19,10 @@ public class Card{
 	float height = 1f;
 	float originX = width/2f;
 	float originY = height/2f;
+	float scaleX = 1f;
+	float scaleY = 1f;
 	float rotation = 0;
+	boolean hover = false;;
 
 	public Card(Pip pip, Suit suit, TextureRegion front, TextureRegion back){
 		this.pip = pip;
@@ -80,7 +83,7 @@ public class Card{
 	}
 
     public void draw(Batch batch){
-		batch.draw((turned) ? back : front, x,y, originX, originY ,width, height,1f,1f, rotation);
+		batch.draw((turned) ? back : front, x,y, originX, originY ,width, height,scaleX,scaleY, rotation);
     }
 
     public void drawBack(Batch batch){
@@ -115,6 +118,14 @@ public class Card{
 	    return this.y;
     }
 
-
+    public void hover(boolean hovered){
+	    if(hovered){
+		    this.scaleX = 1.2f;
+		    this.scaleY = 1.2f;
+	    }else{
+		    this.scaleX = 1f;
+		    this.scaleY = 1f;
+	    }
+    }
 
 }

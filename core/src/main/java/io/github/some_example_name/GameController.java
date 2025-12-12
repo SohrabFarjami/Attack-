@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.List;
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-// import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
@@ -246,6 +245,7 @@ public class GameController{
 	    for(Card card : validCards){
 		    if(card.getBoundingRectangle().contains(touchpos)){
 			    clickedCard = card;
+			    card.hover(false);
 			    return;
 		    };
 	    }
@@ -302,6 +302,21 @@ public class GameController{
 
     public AnimationController getAnimationController(){
 	    return animationController;
+    }
+
+    public void mouseAt(Vector2 mousePos){
+	    Array<Card> validCards = new Array<>(8); //maybe remove hardcode if adding more card games in future
+	    validCards.addAll(gamestate.getCurrentPlayer().getHand());
+	    validCards.addAll(river.getCards());
+
+	    for(Card card : validCards){
+		    if(card.getBoundingRectangle().contains(mousePos)){
+			    card.hover(true);
+		    }
+		    else{
+			    card.hover(false);
+		    }
+	    }
     }
 
 

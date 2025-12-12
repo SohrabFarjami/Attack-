@@ -6,6 +6,7 @@ import java.util.List;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -40,6 +41,8 @@ public class Game implements ApplicationListener {
     boolean clicked = false; //Remove this later
 
    public void create () {
+	   Music music = Gdx.audio.newMusic(Gdx.files.internal("music/Hades.mp3"));
+	   music.play();
         font = new BitmapFont();
         spriteBatch = new SpriteBatch();
         atlas = new TextureAtlas(Gdx.files.internal("assets/cards.atlas"));
@@ -96,16 +99,18 @@ public class Game implements ApplicationListener {
             touchPos.set(Gdx.input.getX(),Gdx.input.getY());
             viewport.unproject(touchPos);
 		gameController.drag(touchPos);
-	}else{
-		if(clicked){
+	}else if(clicked){
 			clicked = false;
 			gameController.releaseDrag();
 		}
+	else{
+		touchPos.set(Gdx.input.getX(),Gdx.input.getY());
+		viewport.unproject(touchPos);
+		gameController.mouseAt(touchPos);
 	}
+}
 
 
-
-   }
 
    private void logic(){
    }
