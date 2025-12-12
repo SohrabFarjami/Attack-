@@ -21,7 +21,6 @@ public class GameState{
     private Player defender;
     private RoundState roundState = RoundState.ATTACKING;
     private Card trumpCard;
-    private List<Card> riverCards = new ArrayList<>();
     private RoundPhase roundPhase;
     private final Array<Slot> slots;
 
@@ -74,20 +73,8 @@ public class GameState{
     }
 
 
-    public List<Card> getRiverCards(){
-	return riverCards;
-    }
-
     public Array<Slot> getSlots(){
 	    return slots;
-    }
-
-    public void setRiverCards(List<Card> cards){
-	    riverCards.addAll(cards);
-    }
-
-    public void clearRiver(){
-	    riverCards.clear();
     }
 
     public void switchRoles(){

@@ -1,7 +1,5 @@
 package io.github.some_example_name;
 
-import java.util.ArrayList;
-import java.util.List;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
@@ -12,7 +10,6 @@ public class Hand{
 
 	Hand(Vector2 position, int maxSize){
 		this.position = position;
-		System.out.printf("Hand initialize x:%f y: %f %n",position.x,position.y);
 		slots = new Array<Slot>(true,maxSize);
 		for(int i = 0; i < maxSize; i++){
 			Vector2 slotPosition = new Vector2(this.position.x + i, this.position.y);
@@ -56,6 +53,7 @@ public class Hand{
 		}
 	}
 
+
 	public Array<Slot> getSlots(){
 		return slots;
 	}
@@ -70,7 +68,7 @@ public class Hand{
 		}
 	}
 
-	public void removeAll(List<Card> cards){
+	public void removeAll(Array<Card> cards){
 		for(Card card : cards){
 			for(Slot slot: slots){
 				if(slot.getCard() == card){
@@ -85,6 +83,7 @@ public class Hand{
 			return slot.getPosition();
 			}
 		}
+		System.out.println("getCardSlot is returning null");
 		return null;
 	}
 

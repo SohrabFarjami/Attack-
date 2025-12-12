@@ -1,7 +1,6 @@
 package io.github.some_example_name;
 
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -28,7 +27,6 @@ public class GameController{
 
 	private Deck deck;
 	private Card trumpCard;
-    	private List<Card> chosenCards = new ArrayList<>();
     	private final GameState gamestate;
 	private final AnimationController animationController;
 	
@@ -38,7 +36,7 @@ public class GameController{
 	public GameController(TextureAtlas atlas){
 		animationController = new AnimationController();
 		Collections.shuffle(players);
-		Array<Slot> totalSlots = new Array<Slot>(12);
+		Array<Slot> totalSlots = new Array<Slot>(16);
 		totalSlots.addAll(river.getSlots());
 		totalSlots.addAll(p1.getSlots());
 		totalSlots.addAll(p2.getSlots());
@@ -69,63 +67,66 @@ public class GameController{
 
 
 	public void attack(){
-		if(chosenCards.isEmpty()){
+		if(river.isEmpty()){
 			return;
 		}
+		Array<Card> attackCards = river.getCards();
         	defender = gamestate.getDefender();
         	attacker = gamestate.getAttacker();
-		if(validAttack(chosenCards)){
+		if(validAttack(attackCards)){
 			int pos = 2; //TODO remove hardcodes
-			for(Card card : chosenCards){
+			for(Card card : attackCards){
 				animationController.moveCardTo(pos++, 2, 0.1f,0.1f,card,WaitType.WAIT_START);
 			}
-			gamestate.setRiverCards(chosenCards);
-			attacker.removeAll(chosenCards);
 			switchPlaces(attacker, defender);
 
 			gamestate.setRoundState(RoundState.DEFENDING);
 
-			chosenCards.clear();
+			attackCards.clear();
 			// TODO fix ugly code
 		}
 	}
 	
 	public void defend(){
-		List<Card> wonCards = new ArrayList<>();
+		Array<Card> wonCards = new Array<>();
         	defender = gamestate.getDefender();
         	attacker = gamestate.getAttacker();
 		Player winner = attacker;
+		Array<Card> riverCards = river.getCards();
+		Array<Card> defenderCards = river.getDefenderCards();
+		Array<Card> attackerCards = river.getAttackerCards();
+		
 
-		wonCards.addAll(chosenCards);
-		wonCards.addAll(gamestate.getRiverCards());
+		wonCards.addAll(riverCards);
 
-		if(chosenCards.size() != gamestate.getRiverCards().size()){
+		if(attackerCards.size != defenderCards.size){
 			System.out.println("Too many or too little cards selected");
+			System.out.printf("Attack has %d cards and defence has %d cards %n",attackerCards.size,defenderCards.size);
 			return;
 		}
 		if(!gamestate.getPass()){
 			// keep in here as valid defence doesnt know if user passed or not
-			if(!validDefence(gamestate.getRiverCards(),chosenCards)){
+			if(!validDefence()){
 				return;
 			}
-			defender.removeAll(chosenCards);
+			defender.removeAll(defenderCards);
 			winner = defender;
 			gamestate.switchRoles();
 		}
 		else if(gamestate.getPass()){
 			switchPlaces(defender, attacker);
 		}
+
 		winner.addWonCards(wonCards);
+		river.clearCards();
+
 		gamestate.setRoundState(RoundState.ATTACKING);
 		gamestate.setRoundPhase(RoundPhase.ANIMATION);
 		for(Card card : wonCards){
 			card.turn(true);
-			animationController.moveCardTo(Position.CURRENT_HAND.x + 4, (winner == defender) ? 0 : 4 , 5f,1f,card, WaitType.WAIT_START); //Comeup with better logic
+			animationController.moveCardTo(Position.CURRENT_HAND.x + 4, (winner == defender) ? 0 : 4 , 1f,0.1f,card, WaitType.WAIT_START); //Comeup with better logic
 		}
-		defender.removeAll(chosenCards);
-		dealCards(gamestate.getRiverCards().size());
-		gamestate.clearRiver();
-		chosenCards.clear();
+		dealCards(attackerCards.size);
 		gamestate.setPass(false);
 
 	}
@@ -144,16 +145,26 @@ public class GameController{
 
 
 	private void switchPlaces(Player defender, Player attacker){
-		for(Card card : defender.getHand()){
-			card.turn();
-			animationController.moveCardTo(card.getX(), card.getY() + 4, 0f, 0f, card, WaitType.WAIT_END);
-		}
-		for(Card card : attacker.getHand()){
-			card.turn();
-			animationController.moveCardTo(card.getX(), card.getY() - 4, 0f, 0f, card, WaitType.WAIT_END);
+		Vector2 tempPos = null;
+		Array<Slot> defenderSlots = defender.getSlots();
+		Array<Slot> attackerSlots = attacker.getSlots();
+		for(int i = 0; i < 4; i++){
+			Slot attackerSlot = attackerSlots.get(i);
+			Slot defenderSlot = defenderSlots.get(i);
+			if(attackerSlot.hasCard()){
+				attackerSlot.getCard().turn();
+			}
+			if(defenderSlot.hasCard()){
+				defenderSlot.getCard().turn();
+			}
+			tempPos = attackerSlot.getPosition();
+			attackerSlot.setPosition(defenderSlot.getPosition());
+			defenderSlot.setPosition(tempPos);
 		}
 	}
-	private boolean validAttack(List<Card> hand){
+
+
+	private boolean validAttack(Array<Card> hand){
 		if(gamestate.getRoundState() == RoundState.ATTACKING){
 			if(!Card.checkSuits(hand)){
 				System.out.println("Invalid input. Suits must match");
@@ -164,8 +175,10 @@ public class GameController{
 
 	}
 
-	private boolean validDefence(List<Card> attackHand, List<Card> defendHand){
-		for(int i = 0; i < attackHand.size(); i++){
+	private boolean validDefence(){
+		Array<Card> attackHand = river.getAttackerCards();
+		Array<Card> defendHand = river.getDefenderCards();
+		for(int i = 0; i < attackHand.size; i++){
 			Card attackCard = attackHand.get(i);
 			Card defendCard = defendHand.get(i);
 			if(attackCard.getSuit() != defendCard.getSuit() && defendCard.getSuit() != trumpCard.getSuit()){
@@ -214,9 +227,6 @@ public class GameController{
 	}
 
 
-    public List<Card> getChosenCards(){
-        return chosenCards;
-    }
 
     public GameState getGameState(){
         return gamestate;
@@ -247,8 +257,10 @@ public class GameController{
 	    }
 
 	    Player player = gamestate.getCurrentPlayer();
+	    RoundState state = gamestate.getRoundState();
 
-	    Array<Slot> riverSlots = river.getEmptySlots();
+	    Array<Slot> riverSlots = (state == RoundState.ATTACKING)? river.getEmptyAttackerSlots() : river.getEmptyDefenderSlots();
+
 
 
 	    float minDistance = 2f;
@@ -273,13 +285,12 @@ public class GameController{
 	    river.removeCard(clickedCard);
 	    player.remove(clickedCard);
 	    player.addtoHand(clickedCard);
-
 	    clickedCard = null;
     }
 
     public void clickPass(){
 	boolean passState = gamestate.getPass();
-	for(Card card : chosenCards){
+	for(Card card : river.getDefenderCards()){
 		card.turn(!passState);
 	}
 	gamestate.setPass(!passState);

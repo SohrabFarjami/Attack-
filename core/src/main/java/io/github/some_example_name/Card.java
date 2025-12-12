@@ -1,11 +1,10 @@
 package io.github.some_example_name;
 
-import java.util.List;
-
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 
 public class Card{
 	private final Suit suit;
@@ -39,7 +38,7 @@ public class Card{
 		return pip.value;
 	}
 
-	public static boolean checkSuits(List<Card> cards){
+	public static boolean checkSuits(Array<Card> cards){
 		Suit initialSuit =  cards.get(0).getSuit();
 		for(Card card : cards){
 			if(initialSuit != card.getSuit()){

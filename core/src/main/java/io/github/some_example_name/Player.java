@@ -10,7 +10,7 @@ public class Player{
 	private static int nextPlayer = 1;
 	private int player;
 	//private List<Card> hand = new ArrayList<Card>(4);
-	private List<Card> wonCards = new ArrayList<Card>();
+	private Array<Card> wonCards = new Array<Card>();
 	private Hand hand;
 	private int points;
 
@@ -38,7 +38,7 @@ public class Player{
 		return hand.getCardSlotPosition(card);
 	}
 
-	public void addWonCards(List<Card> cards){
+	public void addWonCards(Array<Card> cards){
 		wonCards.addAll(cards);
 	}
 
@@ -51,14 +51,14 @@ public class Player{
 	}
 
 
-	public List<Card> getAllWonCards(){
+	public Array<Card> getAllWonCards(){
 		return wonCards;
 	}
 
 	public void remove(Card card){
 		hand.remove(card);
 	}
-	public void removeAll(List<Card> cards){
+	public void removeAll(Array<Card> cards){
 		hand.removeAll(cards);
 	}
 	public Array<Card> getHand(){
@@ -72,5 +72,6 @@ public class Player{
 	public void addPoints(int points){
 		this.points += points;
 	}
+
 
 }

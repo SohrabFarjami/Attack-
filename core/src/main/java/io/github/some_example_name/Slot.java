@@ -39,5 +39,8 @@ public class Slot{
 
 	public void setPosition(Vector2 position){
 		this.position = position;
+		if(activeCard != null){
+			activeCard.setPosition(position);
+		}
 	}
 }
