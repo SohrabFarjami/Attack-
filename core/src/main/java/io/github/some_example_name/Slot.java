@@ -20,6 +20,14 @@ public class Slot{
 		activeCard.setPosition(position);
 		return wasEmpty;
 	}
+	public boolean setCard(Card card, boolean changePos){
+		boolean wasEmpty = activeCard == null;
+		activeCard = card;
+		if(changePos){
+			activeCard.setPosition(position);
+		}
+		return wasEmpty;
+	}
 
 	public Card getCard(){
 		return activeCard;

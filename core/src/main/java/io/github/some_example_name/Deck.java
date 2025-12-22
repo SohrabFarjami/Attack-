@@ -14,7 +14,7 @@ public class Deck{
 	public Deck(boolean shuffle,TextureAtlas atlas){
 		for(Suit suit: Suit.values()){
             		for(Pip pip : Pip.values()){
-		    		if(pip.index < 6){ // Set to 6 for normal game
+		    		if(pip.index < 13){ // Set to 6 for normal game
 				continue;
 				}
 			TextureRegion front = atlas.findRegion("card_" + suit.name, pip.index);

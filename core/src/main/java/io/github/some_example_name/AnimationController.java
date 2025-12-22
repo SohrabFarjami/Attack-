@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 
 public class AnimationController{
@@ -20,11 +21,18 @@ public class AnimationController{
 	float timeSinceLastStart = 0;
 
 	public void moveCardTo(Vector2 targetPosition, float duration, float delay, Card card, WaitType waitType){
-		moveCardTo(targetPosition.x, targetPosition.y, duration, delay, card, waitType);
+		moveCardTo(targetPosition.x, targetPosition.y, duration, delay, card, waitType, null);
+	}
+
+	public void moveCardTo(Vector2 targetPosition, float duration, float delay, Card card, WaitType waitType, Sound sound){
+		moveCardTo(targetPosition.x, targetPosition.y, duration, delay, card, waitType, sound);
 	}
 
 	public void moveCardTo(float targetX, float targetY, float duration, float delay, Card card, WaitType waitType){
-		MoveCardAnimation moveCardAnimation = new MoveCardAnimation(targetX,targetY, duration, delay, card, waitType); //Later make this also accept vector
+		moveCardTo(targetX, targetY, duration, delay, card, waitType, null);
+	}
+	public void moveCardTo(float targetX, float targetY, float duration, float delay, Card card, WaitType waitType,Sound sound){
+		MoveCardAnimation moveCardAnimation = new MoveCardAnimation(targetX,targetY, duration, delay, card, waitType, sound); //Later make this also accept vector
 		animationQueue.add(moveCardAnimation);
 	}
 	public void update(float delta){

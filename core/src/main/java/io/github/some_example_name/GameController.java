@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
@@ -31,6 +33,7 @@ public class GameController{
 	
 	private Card clickedCard;
 	private River river = new River(Position.RIVER.position, 4);
+	Sound cardSlide = Gdx.audio.newSound(Gdx.files.internal("audio/card-slide-1.ogg"));
 
 	public GameController(TextureAtlas atlas){
 		animationController = new AnimationController();
@@ -56,10 +59,10 @@ public class GameController{
 	public void playRound(){
 		if(gamestate.getRoundState() == RoundState.ATTACKING){
 			attack();
-		}else{
+		}else if(gamestate.getRoundState() == RoundState.DEFENDING){
 			defend();
 		}
-		if(gamestate.getCurrentPlayer().getHand().size == 0){
+		else{
 			endGame();
 		}
 	}
@@ -133,9 +136,12 @@ public class GameController{
 	public void endGame(){
 		float x = 2; //Fix these placeholders
 		for(Player player : players){
+			System.out.printf("Player %d has %d cards in his won cards %n",player.getPlayer(), player.getAllWonCards().size);
+			Array<Card> wonCards = player.getAllWonCards();
+			wonCards.reverse();
 			for(Card card : player.getAllWonCards()){
 				card.turn(false);
-				animationController.moveCardTo(x, 2, 0.1f,1f,card,WaitType.WAIT_START);
+				animationController.moveCardTo(x, 2, 0.5f,1f,card,WaitType.WAIT_START);
 				player.addPoints(card.getPoints());
 			}
 			x++;
@@ -151,10 +157,10 @@ public class GameController{
 			Slot attackerSlot = attackerSlots.get(i);
 			Slot defenderSlot = defenderSlots.get(i);
 			if(attackerSlot.hasCard()){
-				attackerSlot.getCard().turn();
+				attackerSlot.getCard().turn(false);
 			}
 			if(defenderSlot.hasCard()){
-				defenderSlot.getCard().turn();
+				defenderSlot.getCard().turn(true);
 			}
 			tempPos = attackerSlot.getPosition();
 			attackerSlot.setPosition(defenderSlot.getPosition());
@@ -203,17 +209,20 @@ public class GameController{
 	}
 
 	public void dealCards(int count){
+		if(!deck.hasCards()){
+			gamestate.setRoundState(RoundState.ENDED);
+		}
 		for(int i = 0 ; i < Math.min(count, deck.size()/2) ; i++){
 			for(Player player : players){
 				Card lastCard = deck.drawLast();
-				player.addtoHand(lastCard);
+				player.addtoHand(false, lastCard);
 				if(player == gamestate.getCurrentPlayer()){
 					lastCard.turn(false);
 				}
 				else{
 					lastCard.turn(true);
 				}
-				animationController.moveCardTo(player.getCardSlotPosition(lastCard), 0.5f,0.1f,lastCard, WaitType.WAIT_START); //Remove hardcodes
+				animationController.moveCardTo(player.getCardSlotPosition(lastCard), 0.2f,0.1f,lastCard, WaitType.WAIT_START, cardSlide); //Remove hardcodes
 				if(lastCard == trumpCard){
 					lastCard.rotate90(true); //TODO fix this is not efficient
 				}
@@ -289,11 +298,8 @@ public class GameController{
     }
 
     public void clickPass(){
-	boolean passState = gamestate.getPass();
-	for(Card card : river.getDefenderCards()){
-		card.turn(!passState);
-	}
-	gamestate.setPass(!passState);
+	gamestate.setPass(true);
+	playRound();
     }
 
     public Deck getDeck(){

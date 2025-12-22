@@ -53,6 +53,14 @@ public class Hand{
 		}
 	}
 
+	public void addCard(Card card, boolean changePos){
+		for(Slot slot : slots){
+			if(!slot.hasCard()){
+				slot.setCard(card, changePos);
+				return;
+			}
+		}
+	}
 
 	public Array<Slot> getSlots(){
 		return slots;

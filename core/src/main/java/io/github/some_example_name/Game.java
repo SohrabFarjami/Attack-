@@ -6,7 +6,6 @@ import java.util.List;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -41,8 +40,6 @@ public class Game implements ApplicationListener {
     boolean clicked = false; //Remove this later
 
    public void create () {
-	   Music music = Gdx.audio.newMusic(Gdx.files.internal("music/Hades.mp3"));
-	   music.play();
         font = new BitmapFont();
         spriteBatch = new SpriteBatch();
         atlas = new TextureAtlas(Gdx.files.internal("assets/cards.atlas"));
@@ -124,7 +121,7 @@ public class Game implements ApplicationListener {
     shapeRenderer.setProjectionMatrix(viewport.getCamera().combined);
 
     spriteBatch.begin(); //Move these to a ui manager
-    //font.draw(spriteBatch, "Player " + gameState.getCurrentPlayer().getPlayer() + "'s turn", 3, 3);
+    font.draw(spriteBatch, "Player " + gameState.getCurrentPlayer().getPlayer() + "'s turn", 3, 3);
     //font.draw(spriteBatch,gameState.getRoundState().toString(), 4, 3);
     gameState.getTrumpCard().draw(spriteBatch);
 
@@ -149,7 +146,6 @@ public class Game implements ApplicationListener {
     if(gameState.getRoundState() == RoundState.DEFENDING){
 	    shapeRenderer.rect(passButton.x, passButton.y, passButton.width, passButton.height);
     }
-    shapeRenderer.rect(touchPos.x - 0.05f, touchPos.y - 0.05f, 0.1f, 0.1f);
     shapeRenderer.end();
     shapeRenderer.begin(ShapeType.Line);
     for(int y = 0; y < 5 ; y++){

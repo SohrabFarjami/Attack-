@@ -9,6 +9,7 @@ public class GameState{
     public enum RoundState{
         ATTACKING,
         DEFENDING,
+	ENDED
     }
 
     public enum RoundPhase{

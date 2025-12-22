@@ -34,11 +34,18 @@ public class Player{
 
 	}
 
+	public void addtoHand(boolean changePos, Card... cards){
+		for(Card card:cards){
+			hand.addCard(card,changePos);
+		}
+
+	}
 	public Vector2 getCardSlotPosition(Card card){
 		return hand.getCardSlotPosition(card);
 	}
 
 	public void addWonCards(Array<Card> cards){
+		System.out.println("Running won cards");
 		wonCards.addAll(cards);
 	}
 

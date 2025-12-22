@@ -1,5 +1,7 @@
 package io.github.some_example_name;
 
+import com.badlogic.gdx.audio.Sound;
+
 import io.github.some_example_name.AnimationController.WaitType;
 
 public class MoveCardAnimation implements AnimationInterface{
@@ -18,8 +20,10 @@ public class MoveCardAnimation implements AnimationInterface{
 	boolean isFinished = false;
 	boolean isStarted = true;
 	private WaitType waitType;
+	private Sound sound;
+	private boolean soundPlayed = false;
 
-	    public MoveCardAnimation(float targetX,float targetY, float duration, float delay, Card card, WaitType waitType){
+	    public MoveCardAnimation(float targetX,float targetY, float duration, float delay, Card card, WaitType waitType, Sound sound){
 		    this.card = card;
 		    startX = card.getX();
 		    startY = card.getY();
@@ -29,8 +33,13 @@ public class MoveCardAnimation implements AnimationInterface{
 		    this.delay = delay;
 		    elapsedTime = 0;
 		    this.waitType = waitType;
+		    this.sound = sound;
 	    }
 	    public void update(float delta){
+		    if(!soundPlayed && sound != null){
+			    sound.play();
+			    soundPlayed = true;
+		    }
 		    float nextX,nextY;
 			    if(!isFinished){
 				    elapsedTime += delta;
