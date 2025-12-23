@@ -45,7 +45,6 @@ public class Player{
 	}
 
 	public void addWonCards(Array<Card> cards){
-		System.out.println("Running won cards");
 		wonCards.addAll(cards);
 	}
 

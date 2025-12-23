@@ -121,15 +121,16 @@ public class Game implements ApplicationListener {
     shapeRenderer.setProjectionMatrix(viewport.getCamera().combined);
 
     spriteBatch.begin(); //Move these to a ui manager
-    font.draw(spriteBatch, "Player " + gameState.getCurrentPlayer().getPlayer() + "'s turn", 3, 3);
+    //font.draw(spriteBatch, "Player " + gameState.getCurrentPlayer().getPlayer() + "'s turn", 3, 3);
     //font.draw(spriteBatch,gameState.getRoundState().toString(), 4, 3);
-    gameState.getTrumpCard().draw(spriteBatch);
+    //ameState.getTrumpCard().draw(spriteBatch);
 
-    for(int x = 0; x < 8; x++){
-	    for(int y = 0; y < 5; y++){
-		    font.draw(spriteBatch, "(" + x + "," + y + ")", x,y);
-	    }
-    }
+//    for(int x = 0; x < 8; x++){
+//	    for(int y = 0; y < 5; y++){
+//		    font.draw(spriteBatch, "(" + x + "," + y + ")", x,y);
+//	    }
+//    }
+
     for(Card card : cards){
 	    card.draw(spriteBatch);
     }
@@ -145,16 +146,17 @@ public class Game implements ApplicationListener {
     shapeRenderer.rect(button.x,button.y,button.width,button.height);
     if(gameState.getRoundState() == RoundState.DEFENDING){
 	    shapeRenderer.rect(passButton.x, passButton.y, passButton.width, passButton.height);
-    }
+   }
+//    shapeRenderer.end();
+//    shapeRenderer.begin(ShapeType.Line);
+//    for(int y = 0; y < 5 ; y++){
+//	shapeRenderer.line(0,y,8,y);
+//    }
+//    for(int i = 0; i < 8 ; i++){
+//	    shapeRenderer.line(i,0,i,5);
+//    }
     shapeRenderer.end();
-    shapeRenderer.begin(ShapeType.Line);
-    for(int y = 0; y < 5 ; y++){
-	shapeRenderer.line(0,y,8,y);
-    }
-    for(int i = 0; i < 8 ; i++){
-	    shapeRenderer.line(i,0,i,5);
-    }
-    shapeRenderer.end();
+
    }
 
 

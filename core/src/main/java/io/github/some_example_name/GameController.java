@@ -124,10 +124,12 @@ public class GameController{
 
 		gamestate.setRoundState(RoundState.ATTACKING);
 		gamestate.setRoundPhase(RoundPhase.ANIMATION);
+
 		for(Card card : wonCards){
 			card.turn(true);
 			animationController.moveCardTo(Position.CURRENT_HAND.x + 4, (winner == defender) ? 0 : 4 , 1f,0.1f,card, WaitType.WAIT_START); //Comeup with better logic
 		}
+
 		dealCards(attackerCards.size);
 		gamestate.setPass(false);
 
@@ -136,7 +138,6 @@ public class GameController{
 	public void endGame(){
 		float x = 2; //Fix these placeholders
 		for(Player player : players){
-			System.out.printf("Player %d has %d cards in his won cards %n",player.getPlayer(), player.getAllWonCards().size);
 			Array<Card> wonCards = player.getAllWonCards();
 			wonCards.reverse();
 			for(Card card : player.getAllWonCards()){
@@ -212,7 +213,8 @@ public class GameController{
 		if(!deck.hasCards()){
 			gamestate.setRoundState(RoundState.ENDED);
 		}
-		for(int i = 0 ; i < Math.min(count, deck.size()/2) ; i++){
+		int deckSize = deck.size();
+		for(int i = 0 ; i < Math.min(count, deckSize/2) ; i++){
 			for(Player player : players){
 				Card lastCard = deck.drawLast();
 				player.addtoHand(false, lastCard);
