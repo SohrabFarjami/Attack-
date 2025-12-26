@@ -12,162 +12,134 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import io.github.some_example_name.GameState.RoundState;
 
 public class Game implements ApplicationListener {
-    SpriteBatch spriteBatch;
-    TextureAtlas atlas;
-    FitViewport viewport;
-    Sprite front;
-    BitmapFont font;
-    Sprite back;
-    GameController gameController;
-    GameState gameState;
-    Vector2 touchPos;
-    ShapeRenderer shapeRenderer;
-    Rectangle passButton;
-    Sprite sprite;
-    List<Card> cards;
-    AnimationController animationController;
-    boolean clicked = false; //Remove this later
-    Ui ui;
+	SpriteBatch spriteBatch;
+	TextureAtlas atlas;
+	FitViewport viewport;
+	Sprite front;
+	BitmapFont font;
+	Sprite back;
+	GameController gameController;
+	GameState gameState;
+	Vector2 touchPos;
+	ShapeRenderer shapeRenderer;
+	Sprite sprite;
+	List<Card> cards;
+	AnimationController animationController;
+	boolean clicked = false; // Remove this later
+	Ui ui;
 
-   public void create () {
-        font = new BitmapFont();
-        spriteBatch = new SpriteBatch();
-        atlas = new TextureAtlas(Gdx.files.internal("assets/cards.atlas"));
-        gameController = new GameController(atlas);
-	cards = new ArrayList<>(gameController.getDeck().getAll());
-	gameController.startGame();
-        gameState = gameController.getGameState();
-	animationController = gameController.getAnimationController();
+	public void create() {
+		font = new BitmapFont();
+		spriteBatch = new SpriteBatch();
+		atlas = new TextureAtlas(Gdx.files.internal("assets/cards.atlas"));
 
-	ui = new Ui(gameController);
+		gameController = new GameController(atlas);
+		gameController.startGame();
+		gameState = gameController.getGameState();
+		cards = new ArrayList<>(gameController.getDeck().getAll());
 
-	viewport = new FitViewport(8, 5);
-        touchPos = new Vector2();
-	shapeRenderer = new ShapeRenderer();
+		animationController = gameController.getAnimationController();
 
-        font.setUseIntegerPositions(false);
-        font.getData().setScale(viewport.getWorldHeight() / Gdx.graphics.getHeight());
+		viewport = new FitViewport(8, 5);
+		touchPos = new Vector2();
 
+		font.setUseIntegerPositions(false);
+		font.getData().setScale(viewport.getWorldHeight() / Gdx.graphics.getHeight());
 
+		ui = new Ui(gameController);
+		gameController.addRoundStateListener(ui);
 
-        passButton = new Rectangle(6f,1.5f,0.7f,0.2f);
-	
-	gameState.getTrumpCard().rotate90(false);
-	gameState.getTrumpCard().setPosition(Position.DECK.x - 9f/64f - 10f/64f, 2f - (9f/64f) + 0.02f); //Todo remove this implementation
-	gameState.getTrumpCard().turn(false);
-   }
+		gameState.getTrumpCard().rotate90(false);
+		gameState.getTrumpCard().setPosition(Position.DECK.x - 9f / 64f - 10f / 64f, 2f - (9f / 64f) + 0.02f); // Todo
+															// remove
+															// this
+															// implementation
+		gameState.getTrumpCard().turn(false);
+	}
 
-   public void render () {
-       input();
-       logic();
-       draw();
-       ui.render();
-   }
+	public void render() {
+		input();
+		logic();
+		draw();
+		ui.render();
+	}
 
-   private void input(){
-        if(Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)){
-		clicked = true;
-            touchPos.set(Gdx.input.getX(),Gdx.input.getY());
-            viewport.unproject(touchPos);
+	private void input() {
+		if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
+			clicked = true;
+			touchPos.set(Gdx.input.getX(), Gdx.input.getY());
+			viewport.unproject(touchPos);
 
-	    gameController.click(touchPos); //TODO move to controller
+			gameController.click(touchPos); // TODO move to controller
 
-	    if(gameState.getRoundState() == RoundState.DEFENDING){
-		    if(passButton.contains(touchPos)){
-			gameController.clickPass();
-		    }
-	    }
-        }
+		}
 
-	if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)){
-            touchPos.set(Gdx.input.getX(),Gdx.input.getY());
-            viewport.unproject(touchPos);
-		gameController.drag(touchPos);
-	}else if(clicked){
+		if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+			touchPos.set(Gdx.input.getX(), Gdx.input.getY());
+			viewport.unproject(touchPos);
+			gameController.drag(touchPos);
+		} else if (clicked) {
 			clicked = false;
 			gameController.releaseDrag();
+		} else {
+			touchPos.set(Gdx.input.getX(), Gdx.input.getY());
+			viewport.unproject(touchPos);
+			gameController.mouseAt(touchPos);
 		}
-	else{
-		touchPos.set(Gdx.input.getX(),Gdx.input.getY());
-		viewport.unproject(touchPos);
-		gameController.mouseAt(touchPos);
+	}
+
+	private void logic() {
+	}
+
+	private void draw() {
+		ScreenUtils.clear(Color.BLACK);
+		float delta = Gdx.graphics.getDeltaTime();
+		viewport.apply();
+
+		spriteBatch.setProjectionMatrix(viewport.getCamera().combined);
+		shapeRenderer.setProjectionMatrix(viewport.getCamera().combined);
+
+		spriteBatch.begin();
+
+		for (Card card : cards) {
+			card.draw(spriteBatch);
+		}
+
+		animationController.update(delta);
+
+		spriteBatch.end();
+
+		// Deubugging stuff
+	}
+	// shapeRenderer.end();
+	// shapeRenderer.begin(ShapeType.Line);
+	// for(int y = 0; y < 5 ; y++){
+	// shapeRenderer.line(0,y,8,y);
+	// }
+	// for(int i = 0; i < 8 ; i++){
+	// shapeRenderer.line(i,0,i,5);
+	// }
+
+	public void resize(int width, int height) {
+		viewport.update(width, height, true);
+		ui.resize(width, height);
+	}
+
+	public void pause() {
+	}
+
+	public void resume() {
+	}
+
+	public void dispose() {
+		spriteBatch.dispose();
+		atlas.dispose();
+		shapeRenderer.dispose();
+		ui.dispose();
 	}
 }
-
-
-
-   private void logic(){
-   }
-
-   private void draw(){
-    float delta = Gdx.graphics.getDeltaTime();
-    ScreenUtils.clear(Color.BLACK);
-    viewport.apply();
-
-    spriteBatch.setProjectionMatrix(viewport.getCamera().combined);
-    shapeRenderer.setProjectionMatrix(viewport.getCamera().combined);
-
-    spriteBatch.begin(); //Move these to a ui manager
-    //font.draw(spriteBatch, "Player " + gameState.getCurrentPlayer().getPlayer() + "'s turn", 3, 3);
-    //font.draw(spriteBatch,gameState.getRoundState().toString(), 4, 3);
-    //ameState.getTrumpCard().draw(spriteBatch);
-
-//    for(int x = 0; x < 8; x++){
-//	    for(int y = 0; y < 5; y++){
-//		    font.draw(spriteBatch, "(" + x + "," + y + ")", x,y);
-//	    }
-//    }
-
-    for(Card card : cards){
-	    card.draw(spriteBatch);
-    }
-
-    animationController.update(delta);
-
-    spriteBatch.end();
-
-
-    //Deubugging stuff
-    shapeRenderer.begin(ShapeType.Filled);
-    shapeRenderer.setColor(Color.RED);
-    if(gameState.getRoundState() == RoundState.DEFENDING){
-	    shapeRenderer.rect(passButton.x, passButton.y, passButton.width, passButton.height);
-   }
-//    shapeRenderer.end();
-//    shapeRenderer.begin(ShapeType.Line);
-//    for(int y = 0; y < 5 ; y++){
-//	shapeRenderer.line(0,y,8,y);
-//    }
-//    for(int i = 0; i < 8 ; i++){
-//	    shapeRenderer.line(i,0,i,5);
-//    }
-    shapeRenderer.end();
-
-   }
-
-
-   public void resize (int width, int height) {
-       viewport.update(width,height,true);
-   }
-
-   public void pause () {
-   }
-
-   public void resume () {
-   }
-
-   public void dispose () {
-       spriteBatch.dispose();
-       atlas.dispose();
-       shapeRenderer.dispose();
-   }
-}
-

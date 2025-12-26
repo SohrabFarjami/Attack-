@@ -9,19 +9,22 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+
+import io.github.some_example_name.GameState.RoundState;
 
 
 
-public class Ui{
+public class Ui implements RoundStateListener{
 	private Stage stage;
 	private Table table;
-	private Table playRoundTable;
     	TextureAtlas uiAtlas;
 	Table buttonTable;
 	TextureRegion upRegion;
 	TextureRegion downRegion;
+	TextButton passButon;
 	public Ui (GameController gameController) {
-		stage = new Stage();
+		stage = new Stage(new FitViewport(800, 500));
 		Gdx.input.setInputProcessor(stage);
 
 		uiAtlas = new TextureAtlas(Gdx.files.internal("assets/uiskin.atlas"));
@@ -31,19 +34,33 @@ public class Ui{
 		buttonTable = new Table();
 		stage.addActor(table);
 
-		table.setDebug(true); // This is optional, but enables debug lines for tables.
+		//table.setDebug(true);
+		//buttonTable.setDebug(true);
 
-		// Add widgets to the table here.
 		Skin skin = new Skin(Gdx.files.internal("assets/uiskin.json"));
-		TextButton button1 = new TextButton("Button", skin);
-		button1.addListener(new ClickListener(){
+		TextButton playButton = new TextButton("Button", skin);
+		passButon = new TextButton("Pass", skin);
+		playButton.addListener(new ClickListener(){
 			@Override
 			public void clicked(InputEvent event, float x, float y){
 				gameController.playRound();
 			}
 		});
-		buttonTable.add(button1).bottom();
-		table.add(buttonTable).bottom().right().pad(1);
+
+		passButon.addListener(new ClickListener(){
+			@Override
+			public void clicked(InputEvent event, float x, float y){
+				gameController.clickPass();;
+			}
+		});
+
+		buttonTable.add(passButon).size(70,30).padBottom(30);
+		buttonTable.row();
+		buttonTable.add(playButton).bottom().size(70,30);
+		stage.addActor(buttonTable);
+		buttonTable.setPosition(600, 150);
+
+		passButon.setVisible(false); //Comeup better solution
 	}
 
 	public void resize (int width, int height) {
@@ -57,5 +74,14 @@ public class Ui{
 
 	public void dispose() {
 		stage.dispose();
+	}
+
+	@Override
+	public void notifyStateChange(RoundState newState) {
+		if(newState == RoundState.DEFENDING){
+			passButon.setVisible(true);
+		}else{
+			passButon.setVisible(false);
+		}
 	}
 }

@@ -33,6 +33,7 @@ public class GameController{
 	
 	private Card clickedCard;
 	private River river = new River(Position.RIVER.position, 4);
+	private Array<RoundStateListener> roundStateListeners = new Array<>(); 
 	Sound cardSlide = Gdx.audio.newSound(Gdx.files.internal("audio/card-slide-1.ogg"));
 
 	public GameController(TextureAtlas atlas){
@@ -82,7 +83,7 @@ public class GameController{
 			}
 			switchPlaces(attacker, defender);
 
-			gamestate.setRoundState(RoundState.DEFENDING);
+			this.setRoundState(RoundState.DEFENDING);
 
 			attackCards.clear();
 			// TODO fix ugly code
@@ -122,7 +123,7 @@ public class GameController{
 		winner.addWonCards(wonCards);
 		river.clearCards();
 
-		gamestate.setRoundState(RoundState.ATTACKING);
+		setRoundState(RoundState.ATTACKING);
 		gamestate.setRoundPhase(RoundPhase.ANIMATION);
 
 		for(Card card : wonCards){
@@ -327,5 +328,17 @@ public class GameController{
 	    }
     }
 
+    private void setRoundState(GameState.RoundState roundState){
+	    gamestate.setRoundState(roundState);
 
+	    if(roundStateListeners.notEmpty()){
+		    for(RoundStateListener listener : roundStateListeners){
+		    	listener.notifyStateChange(roundState);
+		    }
+	    }
+    }
+
+    public void addRoundStateListener(RoundStateListener listener){
+    	roundStateListeners.add(listener);
+    }
 }
