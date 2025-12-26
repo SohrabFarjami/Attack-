@@ -11,7 +11,6 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -26,7 +25,6 @@ public class Game implements ApplicationListener {
 	GameController gameController;
 	GameState gameState;
 	Vector2 touchPos;
-	ShapeRenderer shapeRenderer;
 	Sprite sprite;
 	List<Card> cards;
 	AnimationController animationController;
@@ -39,9 +37,9 @@ public class Game implements ApplicationListener {
 		atlas = new TextureAtlas(Gdx.files.internal("assets/cards.atlas"));
 
 		gameController = new GameController(atlas);
+		cards = new ArrayList<>(gameController.getDeck().getAll()); // MAKESURE THIS IS BEFORE!! START GAME
 		gameController.startGame();
 		gameState = gameController.getGameState();
-		cards = new ArrayList<>(gameController.getDeck().getAll());
 
 		animationController = gameController.getAnimationController();
 
@@ -102,7 +100,6 @@ public class Game implements ApplicationListener {
 		viewport.apply();
 
 		spriteBatch.setProjectionMatrix(viewport.getCamera().combined);
-		shapeRenderer.setProjectionMatrix(viewport.getCamera().combined);
 
 		spriteBatch.begin();
 
@@ -113,17 +110,7 @@ public class Game implements ApplicationListener {
 		animationController.update(delta);
 
 		spriteBatch.end();
-
-		// Deubugging stuff
 	}
-	// shapeRenderer.end();
-	// shapeRenderer.begin(ShapeType.Line);
-	// for(int y = 0; y < 5 ; y++){
-	// shapeRenderer.line(0,y,8,y);
-	// }
-	// for(int i = 0; i < 8 ; i++){
-	// shapeRenderer.line(i,0,i,5);
-	// }
 
 	public void resize(int width, int height) {
 		viewport.update(width, height, true);
@@ -139,7 +126,6 @@ public class Game implements ApplicationListener {
 	public void dispose() {
 		spriteBatch.dispose();
 		atlas.dispose();
-		shapeRenderer.dispose();
 		ui.dispose();
 	}
 }
