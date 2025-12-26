@@ -17,7 +17,6 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-
 import io.github.some_example_name.GameState.RoundState;
 
 public class Game implements ApplicationListener {
@@ -29,15 +28,14 @@ public class Game implements ApplicationListener {
     Sprite back;
     GameController gameController;
     GameState gameState;
-    Player currentPlayer;
     Vector2 touchPos;
     ShapeRenderer shapeRenderer;
-    Rectangle button;
     Rectangle passButton;
     Sprite sprite;
     List<Card> cards;
     AnimationController animationController;
     boolean clicked = false; //Remove this later
+    Ui ui;
 
    public void create () {
         font = new BitmapFont();
@@ -48,17 +46,18 @@ public class Game implements ApplicationListener {
 	gameController.startGame();
         gameState = gameController.getGameState();
 	animationController = gameController.getAnimationController();
-        viewport = new FitViewport(8, 5);
+
+	ui = new Ui(gameController);
+
+	viewport = new FitViewport(8, 5);
         touchPos = new Vector2();
+	shapeRenderer = new ShapeRenderer();
 
         font.setUseIntegerPositions(false);
         font.getData().setScale(viewport.getWorldHeight() / Gdx.graphics.getHeight());
-        currentPlayer = gameState.getCurrentPlayer();
-
-        shapeRenderer = new ShapeRenderer();
 
 
-        button = new Rectangle(6f,1f,0.7f,0.2f);
+
         passButton = new Rectangle(6f,1.5f,0.7f,0.2f);
 	
 	gameState.getTrumpCard().rotate90(false);
@@ -70,6 +69,7 @@ public class Game implements ApplicationListener {
        input();
        logic();
        draw();
+       ui.render();
    }
 
    private void input(){
@@ -79,11 +79,6 @@ public class Game implements ApplicationListener {
             viewport.unproject(touchPos);
 
 	    gameController.click(touchPos); //TODO move to controller
-
-            if(button.contains(touchPos)){
-		gameController.playRound();
-		currentPlayer = gameState.getCurrentPlayer();
-            }
 
 	    if(gameState.getRoundState() == RoundState.DEFENDING){
 		    if(passButton.contains(touchPos)){
@@ -143,7 +138,6 @@ public class Game implements ApplicationListener {
     //Deubugging stuff
     shapeRenderer.begin(ShapeType.Filled);
     shapeRenderer.setColor(Color.RED);
-    shapeRenderer.rect(button.x,button.y,button.width,button.height);
     if(gameState.getRoundState() == RoundState.DEFENDING){
 	    shapeRenderer.rect(passButton.x, passButton.y, passButton.width, passButton.height);
    }
