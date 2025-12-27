@@ -51,6 +51,7 @@ public class Game implements ApplicationListener {
 
 		ui = new Ui(gameController);
 		gameController.addRoundStateListener(ui);
+		gameController.addWarnable(ui);
 
 		gameState.getTrumpCard().rotate90(false);
 		gameState.getTrumpCard().setPosition(Position.DECK.x - 9f / 64f - 10f / 64f, 2f - (9f / 64f) + 0.02f); // Todo
