@@ -69,7 +69,7 @@ public class Main implements ApplicationListener {
 	}
 
 	private void input() {
-		if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
+		if (Gdx.input.justTouched()) {
 			clicked = true;
 			touchPos.set(Gdx.input.getX(), Gdx.input.getY());
 			viewport.unproject(touchPos);
@@ -78,7 +78,7 @@ public class Main implements ApplicationListener {
 
 		}
 
-		if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+		if (Gdx.input.isTouched()) {
 			touchPos.set(Gdx.input.getX(), Gdx.input.getY());
 			viewport.unproject(touchPos);
 			gameController.drag(touchPos);
