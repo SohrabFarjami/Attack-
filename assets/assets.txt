@@ -58,10 +58,6 @@ Cards/card_spades_12.png
 Cards/card_spades_13.png
 assets/cards.atlas
 assets/cards.png
-assets/ui.png
-assets/uiskin.atlas
-assets/uiskin.json
-assets/uiskin.png
 audio/card-fan-1.ogg
 audio/card-fan-2.ogg
 audio/card-place-1.ogg
@@ -116,6 +112,8 @@ audio/die-throw-1.ogg
 audio/die-throw-2.ogg
 audio/die-throw-3.ogg
 audio/die-throw-4.ogg
+cards.atlas
+cards.png
 hs_err_pid278524.log
 hs_err_pid298306.log
 hs_err_pid367454.log
@@ -124,3 +122,7 @@ hs_err_pid705694.log
 hs_err_pid72309.log
 hs_err_pid731282.log
 music/Hades.mp3
+ui.png
+uiskin.atlas
+uiskin.json
+uiskin.png
