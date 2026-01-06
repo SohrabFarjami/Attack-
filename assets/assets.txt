@@ -114,6 +114,7 @@ audio/die-throw-3.ogg
 audio/die-throw-4.ogg
 cards.atlas
 cards.png
+default.fnt
 hs_err_pid278524.log
 hs_err_pid298306.log
 hs_err_pid367454.log

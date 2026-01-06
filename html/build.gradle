@@ -139,3 +139,22 @@ java.targetCompatibility = JavaVersion.VERSION_11
 sourceSets.main.java.srcDirs = [ "src/main/java/" ]
 
 eclipse.project.name = appName + "-html"
+
+task exportToVaadin(type: Copy) {
+    group = "distribution"
+    description = "Copies the built HTML game to the Vaadin project folder"
+
+    // 1. Take files from the LibGDX build folder
+    from "build/dist"
+
+    // 2. Put them into your Vaadin folder (Exact path you gave me)
+    into "/home/sohrab/5 Github/my-project/src/main/resources/META-INF/resources/attack"
+
+    // 3. (Optional) Print a success message
+    doLast {
+        println "✅ SUCCESS: Game deployed to Vaadin at .../resources/attack"
+    }
+}
+
+// 4. Run this automatically every time you run 'dist'
+dist.finalizedBy(exportToVaadin)

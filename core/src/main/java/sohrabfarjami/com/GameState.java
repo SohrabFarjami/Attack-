@@ -24,6 +24,7 @@ public class GameState{
     private Card trumpCard;
     private RoundPhase roundPhase;
     private final Array<Slot> slots;
+    private boolean paused = false;
 
     public GameState(Player attacker, Player defender, Array<Slot> slots){
         this.attacker = attacker;
@@ -96,6 +97,12 @@ public class GameState{
 	    this.roundPhase = roundPhase;
     }
 
+    public boolean getPaused(){
+        return paused;
+    }
 
+    public void setPaused(boolean paused){
+        this.paused = paused;
+    }
 
 }

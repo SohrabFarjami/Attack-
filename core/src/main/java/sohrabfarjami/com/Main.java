@@ -14,6 +14,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.InputMultiplexer;
 
 public class Main implements ApplicationListener {
 	SpriteBatch spriteBatch;
@@ -30,6 +31,7 @@ public class Main implements ApplicationListener {
 	AnimationController animationController;
 	boolean clicked = false; // Remove this later
 	Ui ui;
+    PauseScreen pauseScreen;
 
 	public void create() {
 		font = new BitmapFont();
@@ -49,7 +51,8 @@ public class Main implements ApplicationListener {
 		font.setUseIntegerPositions(false);
 		font.getData().setScale(viewport.getWorldHeight() / Gdx.graphics.getHeight());
 
-		ui = new Ui(gameController);
+		ui = new Ui(gameController,gameState);
+        pauseScreen = new PauseScreen(gameState);
 		gameController.addRoundStateListener(ui);
 		gameController.addWarnable(ui);
 
@@ -59,13 +62,23 @@ public class Main implements ApplicationListener {
 															// this
 															// implementation
 		gameState.getTrumpCard().turn(false);
+
+        InputMultiplexer multiplexer = new InputMultiplexer();
+        multiplexer.addProcessor(pauseScreen.getStage());
+        multiplexer.addProcessor(ui.getStage());
+        Gdx.input.setInputProcessor(multiplexer);
+
 	}
 
 	public void render() {
-		input();
-		logic();
-		draw();
-		ui.render();
+        if(gameState.getPaused() == false){
+            input();
+            logic();
+            draw();
+            ui.render();
+        }else{
+            pauseScreen.render();
+        }
 	}
 
 	private void input() {
