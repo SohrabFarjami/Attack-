@@ -5,16 +5,16 @@ import java.util.List;
 
 import com.badlogic.gdx.utils.Array;
 
-public class GameState{
-    public enum RoundState{
+public class GameState {
+    public enum RoundState {
         ATTACKING,
         DEFENDING,
-	ENDED
+        ENDED
     }
 
-    public enum RoundPhase{
-	    PLAYER_TURN,
-	    ANIMATION
+    public enum RoundPhase {
+        PLAYER_TURN,
+        ANIMATION
     }
 
     private boolean pass = false;;
@@ -26,82 +26,79 @@ public class GameState{
     private final Array<Slot> slots;
     private boolean paused = false;
 
-    public GameState(Player attacker, Player defender, Array<Slot> slots){
+    public GameState(Player attacker, Player defender, Array<Slot> slots) {
         this.attacker = attacker;
         this.defender = defender;
-	this.slots = slots;
+        this.slots = slots;
     }
 
-    public Player getDefender(){
+    public Player getDefender() {
         return defender;
     }
 
-    public Player getAttacker(){
+    public Player getAttacker() {
         return attacker;
     }
 
-    public RoundState getRoundState(){
+    public RoundState getRoundState() {
         return roundState;
     }
 
-    public Player getCurrentPlayer(){
-        if(roundState == RoundState.ATTACKING){
+    public Player getCurrentPlayer() {
+        if (roundState == RoundState.ATTACKING) {
             return attacker;
-        }
-        else{
+        } else {
             return defender;
         }
     }
 
-    public Player getNextPlayer(){
-	if(roundState == RoundState.ATTACKING){
-		return defender;
-	}
-	else{
-		return attacker;
-	}
+    public Player getNextPlayer() {
+        if (roundState == RoundState.ATTACKING) {
+            return defender;
+        } else {
+            return attacker;
+        }
     }
 
-    public Card getTrumpCard(){
+    public Card getTrumpCard() {
         return trumpCard;
     }
 
-    public void setRoundState(RoundState roundstate){
-	this.roundState = roundstate;
+    public void setRoundState(RoundState roundstate) {
+        this.roundState = roundstate;
     }
 
-    public void setTrumpCard(Card trumpCard){
+    public void setTrumpCard(Card trumpCard) {
         this.trumpCard = trumpCard;
     }
 
-
-    public Array<Slot> getSlots(){
-	    return slots;
+    public Array<Slot> getSlots() {
+        return slots;
     }
 
-    public void switchRoles(){
-	Player temp = defender;
-	defender = attacker;
-	attacker = temp;
+    public void switchRoles() {
+        Player temp = defender;
+        defender = attacker;
+        attacker = temp;
     }
 
-    public void setPass(boolean pass){
-	    this.pass = pass;
-    }
-    public boolean getPass(){
-	return pass;
+    public void setPass(boolean pass) {
+        this.pass = pass;
     }
 
-
-    public void setRoundPhase(RoundPhase roundPhase){
-	    this.roundPhase = roundPhase;
+    public boolean getPass() {
+        return pass;
     }
 
-    public boolean getPaused(){
+    public void setRoundPhase(RoundPhase roundPhase) {
+        this.roundPhase = roundPhase;
+    }
+
+    public boolean getPaused() {
         return paused;
     }
 
-    public void setPaused(boolean paused){
+    public void setPaused(boolean paused) {
         this.paused = paused;
     }
 
