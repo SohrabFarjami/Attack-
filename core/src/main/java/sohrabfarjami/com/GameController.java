@@ -1,9 +1,5 @@
 package sohrabfarjami.com;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.files.FileHandle;
@@ -17,47 +13,66 @@ import sohrabfarjami.com.GameState.RoundPhase;
 import sohrabfarjami.com.GameState.RoundState;
 
 public class GameController {
-    private final Player p1 = new Player(4, Vector2.Zero);
-    private final Player p2 = new Player(4, Vector2.Zero);
 
-    private List<Player> players = Arrays.asList(p1, p2);
+    private Array<Player> players;
 
     private Player attacker;
     private Player defender;
 
     private Deck deck;
     private Card trumpCard;
+    private River river;
+
     private final GameState gamestate;
     private final AnimationController animationController;
 
     private Card clickedCard;
-    private River river = new River(Position.RIVER.position, 4);
     private Array<RoundStateListener> roundStateListeners = new Array<>();
     private Array<Warnable> warnables = new Array<>();
-    Sound cardSlide = Gdx.audio.newSound(Gdx.files.internal("audio/card-slide-1.ogg"));
+    private Sound cardSlide = Gdx.audio.newSound(Gdx.files.internal("audio/card-slide-1.ogg"));
+
+    private String gameData;
 
     public GameController(TextureAtlas atlas) {
+        this(atlas, null);
+    }
+
+    public GameController(TextureAtlas atlas, GameState gamestate) {
         animationController = new AnimationController();
-        Collections.shuffle(players);
-        Array<Slot> totalSlots = new Array<Slot>(16);
-        totalSlots.addAll(river.getSlots());
-        totalSlots.addAll(p1.getSlots());
-        totalSlots.addAll(p2.getSlots());
-        gamestate = new GameState(players.get(0), players.get(1), totalSlots);
-        players.get(0).setHandPosition(Position.CURRENT_HAND.position);
-        players.get(1).setHandPosition(Position.OPPONENT_HAND.position);
-        deck = new Deck(true, atlas);
+
+        if (gamestate == null) {
+            Player p1 = new Player(4, Vector2.Zero);
+            Player p2 = new Player(4, Vector2.Zero);
+            Array<Slot> totalSlots = new Array<Slot>(16);
+            river = new River(Position.RIVER.position, 4);
+            totalSlots.addAll(river.getSlots());
+            totalSlots.addAll(p1.getSlots());
+            totalSlots.addAll(p2.getSlots());
+            players = Array.with(p1, p2);
+            players.shuffle();
+            deck = new Deck(true, atlas);
+            this.gamestate = new GameState(players, totalSlots, deck, river);
+            players.get(0).setHandPosition(Position.CURRENT_HAND.position);
+            players.get(1).setHandPosition(Position.OPPONENT_HAND.position);
+            this.gamestate.setTrumpCard(deck.get(1));
+            SpriteController.stackDeck(0.02f, deck);
+            trumpCard = this.gamestate.getTrumpCard();
+        } else {
+            this.gamestate = gamestate;
+            players = gamestate.getPlayers();
+            deck = gamestate.getDeck();
+            river = gamestate.getRiver();
+            trumpCard = gamestate.getTrumpCard();
+        }
 
     }
 
     public void startGame() {
-        SpriteController.stackDeck(0.02f, deck);
-        gamestate.setTrumpCard(deck.get(1));
-        trumpCard = gamestate.getTrumpCard();
         dealCards(4);
     }
 
     public void playRound() {
+        System.out.println(gamestate.getRoundState());
         if (gamestate.getRoundState() == RoundState.ATTACKING) {
             attack();
         } else if (gamestate.getRoundState() == RoundState.DEFENDING) {
@@ -65,6 +80,7 @@ public class GameController {
         } else {
             endGame();
         }
+        toJsonGameState();
     }
 
     public void attack() {
@@ -216,6 +232,7 @@ public class GameController {
         if (!deck.hasCards()) {
             gamestate.setRoundState(RoundState.ENDED);
         }
+
         int deckSize = deck.size();
         for (int i = 0; i < Math.min(count, deckSize / 2); i++) {
             for (Player player : players) {
@@ -251,8 +268,12 @@ public class GameController {
 
     public void click(Vector2 touchpos) {
         Array<Card> validCards = new Array<>(4); // maybe remove hardcode if adding more card games in future
-        validCards.addAll(gamestate.getCurrentPlayer().getHand());
+
+        // validCards.addAll(gamestate.getCurrentPlayer().getHand());
         validCards.addAll(river.getCards());
+        for (Player player : gamestate.getPlayers()) {
+            validCards.addAll(player.getHand());
+        }
 
         for (Card card : validCards) {
             if (card.getBoundingRectangle().contains(touchpos)) {
@@ -354,12 +375,13 @@ public class GameController {
         }
     }
 
-    public void saveGameState() {
+    public void toJsonGameState() {
         Json json = new Json();
-        String gameData = json.toJson(gamestate); // TODO change all gameStates to gamestates
+        gameData = json.toJson(gamestate);
+    }
 
-        FileHandle file = Gdx.files.local("savegame.json");
-
+    public void saveGameState() {
+        FileHandle file = Gdx.files.local("saves/savegame.json");
         file.writeString(gameData, false);
     }
 }

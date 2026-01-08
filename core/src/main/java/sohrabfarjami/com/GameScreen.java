@@ -1,17 +1,14 @@
 package sohrabfarjami.com;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
@@ -20,38 +17,51 @@ public class GameScreen implements Screen {
     TextureAtlas atlas;
     FitViewport viewport;
     Sprite front;
-    BitmapFont font;
     Sprite back;
     GameController gameController;
     GameState gameState;
     Vector2 touchPos;
     Sprite sprite;
-    List<Card> cards;
+    Array<Card> cards;
     AnimationController animationController;
     boolean clicked = false; // Remove this later
     Ui ui;
     PauseScreen pauseScreen;
+    InputMultiplexer multiplexer;
 
     public GameScreen(final Attack game) {
-        this.game = game;
-        font = new BitmapFont();
-        atlas = new TextureAtlas(Gdx.files.internal("cards.atlas"));
+        this(game, null);
+    }
 
-        gameController = new GameController(atlas);
-        cards = new ArrayList<>(gameController.getDeck().getAll()); // MAKESURE THIS IS BEFORE!! START GAME
-        gameController.startGame();
+    public GameScreen(final Attack game, GameController loadedGameController) {
+        // TODO change this fucking stupid gamestate gamecontroller logic
+        this.game = game;
+
+        atlas = game.manager.get("cards.atlas", TextureAtlas.class);
+
+        if (loadedGameController == null) {
+            gameController = new GameController(atlas, gameState);
+        } else {
+            gameController = loadedGameController;
+        }
+
         gameState = gameController.getGameState();
+
+        if (loadedGameController == null) {
+            cards = new Array<>(gameController.getDeck().getAll()); // MAKESURE THIS IS BEFORE!! START GAME //TODO
+                                                                    // change logic
+            gameController.startGame();
+        } else {
+            cards = gameState.getAllCards();
+        }
 
         animationController = gameController.getAnimationController();
 
         viewport = new FitViewport(8, 5);
         touchPos = new Vector2();
 
-        font.setUseIntegerPositions(false);
-        font.getData().setScale(viewport.getWorldHeight() / Gdx.graphics.getHeight());
-
         ui = new Ui(gameController, gameState); // remove gamecontroller dependencies
-        pauseScreen = new PauseScreen(gameController, gameState);
+        pauseScreen = new PauseScreen(gameController, game, this);
         gameController.addRoundStateListener(ui);
         gameController.addWarnable(ui);
 
@@ -62,8 +72,7 @@ public class GameScreen implements Screen {
         // implementation
         gameState.getTrumpCard().turn(false);
 
-        InputMultiplexer multiplexer = new InputMultiplexer();
-        multiplexer.addProcessor(pauseScreen.getStage());
+        multiplexer = new InputMultiplexer();
         multiplexer.addProcessor(ui.getStage());
         Gdx.input.setInputProcessor(multiplexer);
 
@@ -71,9 +80,9 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {
+        ScreenUtils.clear(Color.BLACK);
         if (gameState.getPaused() == false) {
             input();
-            logic();
             draw();
             ui.render();
         } else {
@@ -82,6 +91,14 @@ public class GameScreen implements Screen {
     }
 
     private void input() {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+            gameState.setPaused(!gameState.getPaused());
+            if (gameState.getPaused() == true) {
+                multiplexer.addProcessor(pauseScreen.getStage());
+            } else {
+                multiplexer.removeProcessor(pauseScreen.getStage());
+            }
+        }
         if (Gdx.input.justTouched()) {
             clicked = true;
             touchPos.set(Gdx.input.getX(), Gdx.input.getY());
@@ -105,20 +122,18 @@ public class GameScreen implements Screen {
         }
     }
 
-    private void logic() {
-    }
-
     private void draw() {
-        ScreenUtils.clear(Color.BLACK);
         float delta = Gdx.graphics.getDeltaTime();
         viewport.apply();
-
         game.spriteBatch.setProjectionMatrix(viewport.getCamera().combined);
 
         game.spriteBatch.begin();
 
         for (Card card : cards) {
             card.draw(game.spriteBatch);
+        }
+
+        for (Card card : gameState.getCurrentPlayer().getHand()) {
         }
 
         animationController.update(delta);
@@ -139,8 +154,6 @@ public class GameScreen implements Screen {
     }
 
     public void dispose() {
-        game.spriteBatch.dispose();
-        atlas.dispose();
         ui.dispose();
     }
 

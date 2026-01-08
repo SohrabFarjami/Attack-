@@ -1,8 +1,5 @@
 package sohrabfarjami.com;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.badlogic.gdx.utils.Array;
 
 public class GameState {
@@ -18,18 +15,27 @@ public class GameState {
     }
 
     private boolean pass = false;;
+    private Array<Player> players;
     private Player attacker;
     private Player defender;
     private RoundState roundState = RoundState.ATTACKING;
     private Card trumpCard;
+    private Deck deck;
     private RoundPhase roundPhase;
-    private final Array<Slot> slots;
+    private Array<Slot> slots;
+    private River river;
     private boolean paused = false;
 
-    public GameState(Player attacker, Player defender, Array<Slot> slots) {
-        this.attacker = attacker;
-        this.defender = defender;
+    public GameState() {
+    }
+
+    public GameState(Array<Player> players, Array<Slot> slots, Deck deck, River river) {
+        this.river = river;
+        this.players = players;
+        this.attacker = players.get(0);
+        this.defender = players.get(1);
         this.slots = slots;
+        this.deck = deck;
     }
 
     public Player getDefender() {
@@ -102,4 +108,25 @@ public class GameState {
         this.paused = paused;
     }
 
+    public Array<Player> getPlayers() {
+        return players;
+    }
+
+    public Deck getDeck() {
+        return deck;
+    }
+
+    public River getRiver() {
+        return river;
+    }
+
+    public Array<Card> getAllCards() {
+        Array<Card> allCards = new Array<>();
+        allCards.addAll(deck.getAll());
+        allCards.addAll(river.getCards());
+        for (Player player : players) {
+            allCards.addAll(player.getHand());
+        }
+        return allCards;
+    }
 }

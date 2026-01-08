@@ -1,83 +1,84 @@
 package sohrabfarjami.com;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
-public class Player{
-	private static int nextPlayer = 1;
-	private int player;
-	//private List<Card> hand = new ArrayList<Card>(4);
-	private Array<Card> wonCards = new Array<Card>();
-	private Hand hand;
-	private int points;
+public class Player {
+    private static int nextPlayer = 1;
+    private int player;
+    private Array<Card> wonCards = new Array<Card>();
+    private Hand hand;
+    private int points;
 
-	public Player(int handSize, Vector2 handPosition){
-		player = nextPlayer;
-		nextPlayer++;
-		hand = new Hand(handPosition, handSize);
-	}
-	public int getPlayer(){
-		return player;
-	}
+    public Player() {
+    }
 
-	public void setHandPosition(Vector2 position){
-		hand.setPosition(position);
-	}
+    public Player(int handSize, Vector2 handPosition) {
+        player = nextPlayer;
+        nextPlayer++;
+        hand = new Hand(handPosition, handSize);
+    }
 
-	public void addtoHand(Card... cards){
-		for(Card card:cards){
-			hand.addCard(card);
-		}
+    public int getPlayer() {
+        return player;
+    }
 
-	}
+    public void setHandPosition(Vector2 position) {
+        hand.setPosition(position);
+    }
 
-	public void addtoHand(boolean changePos, Card... cards){
-		for(Card card:cards){
-			hand.addCard(card,changePos);
-		}
+    public void addtoHand(Card... cards) {
+        for (Card card : cards) {
+            hand.addCard(card);
+        }
 
-	}
-	public Vector2 getCardSlotPosition(Card card){
-		return hand.getCardSlotPosition(card);
-	}
+    }
 
-	public void addWonCards(Array<Card> cards){
-		wonCards.addAll(cards);
-	}
+    public void addtoHand(boolean changePos, Card... cards) {
+        for (Card card : cards) {
+            hand.addCard(card, changePos);
+        }
 
-	public Slot getFirstEmptySlot(){
-		return hand.getFirstEmptySlot();
-	}
+    }
 
-	public Array<Slot> getSlots(){
-		return hand.getSlots();
-	}
+    public Vector2 getCardSlotPosition(Card card) {
+        return hand.getCardSlotPosition(card);
+    }
 
+    public void addWonCards(Array<Card> cards) {
+        wonCards.addAll(cards);
+    }
 
-	public Array<Card> getAllWonCards(){
-		return wonCards;
-	}
+    public Slot getFirstEmptySlot() {
+        return hand.getFirstEmptySlot();
+    }
 
-	public void remove(Card card){
-		hand.remove(card);
-	}
-	public void removeAll(Array<Card> cards){
-		hand.removeAll(cards);
-	}
-	public Array<Card> getHand(){
-		return hand.getHand();
-	}
+    public Array<Slot> getSlots() {
+        return hand.getSlots();
+    }
 
-	public int handSize(){
-		return hand.size();
-	}
+    public Array<Card> getAllWonCards() {
+        return wonCards;
+    }
 
-	public void addPoints(int points){
-		this.points += points;
-	}
+    public void remove(Card card) {
+        hand.remove(card);
+    }
 
+    public void removeAll(Array<Card> cards) {
+        hand.removeAll(cards);
+    }
+
+    public Array<Card> getHand() {
+        return hand.getHand();
+    }
+
+    public int handSize() {
+        return hand.size();
+    }
+
+    public void addPoints(int points) {
+        this.points += points;
+    }
 
 }

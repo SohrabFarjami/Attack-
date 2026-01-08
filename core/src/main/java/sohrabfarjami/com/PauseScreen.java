@@ -1,5 +1,6 @@
 package sohrabfarjami.com;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -17,8 +18,10 @@ public class PauseScreen {
     private Table table;
     TextureAtlas uiAtlas;
     TextButton passButon;
+    private GameState gamestate;
 
-    public PauseScreen(GameController gameController, GameState gameState) {
+    public PauseScreen(GameController gameController, Attack game, GameScreen gameScreen) {
+        gamestate = gameController.getGameState();
         stage = new Stage(new FitViewport(800, 500));
         Gdx.input.setInputProcessor(stage);
 
@@ -32,7 +35,7 @@ public class PauseScreen {
         // buttonTable.setDebug(true);
         Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
         TextButton saveButton = new TextButton("Save", skin);
-
+        TextButton mainMenuButton = new TextButton("Returnt to Menu", skin);
         saveButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -41,19 +44,17 @@ public class PauseScreen {
             }
         });
 
-        table.add(saveButton).size(70, 30);
-
-        stage.addListener(new InputListener() {
+        mainMenuButton.addListener(new ClickListener() {
             @Override
-            public boolean keyDown(InputEvent event, int keycode) {
-                if (keycode == Input.Keys.ESCAPE) {
-                    gameState.setPaused(!gameState.getPaused());
-                    System.out.println("UnPaused");
-                    return true; // Event handled
-                }
-                return false;
+            public void clicked(InputEvent event, float x, float y) {
+                gameScreen.dispose();
+                game.setScreen(new MainMenuScreen(game));
+
             }
         });
+        table.add(saveButton).size(70, 30);
+        table.row();
+        table.add(mainMenuButton).size(70, 30);
 
     }
 

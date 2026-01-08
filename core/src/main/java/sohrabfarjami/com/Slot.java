@@ -6,6 +6,8 @@ public class Slot{
 	private Card activeCard;
 	private Vector2 position;
 
+    Slot(){} //Needed for loading deserialaztion
+
 	Slot(Vector2 position){
 		this.position = position;
 	}

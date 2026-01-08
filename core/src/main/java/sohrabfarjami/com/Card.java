@@ -1,129 +1,142 @@
 package sohrabfarjami.com;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Json.Serializable;
 
 public class Card {
-	private final Suit suit;
-	private final Pip pip;
-	private final TextureRegion front;
-	private final TextureRegion back;
-	private boolean turned;
-	// Texture stuff move out later
-	float x;
-	float y;
-	float width = 1f;
-	float height = 1f;
-	float originX = width / 2f;
-	float originY = height / 2f;
-	float scaleX = 1f;
-	float scaleY = 1f;
-	float rotation = 0;
-	boolean hover = false;;
+    private Suit suit;
+    private Pip pip;
+    private transient TextureRegion front;
+    private transient TextureRegion back;
+    private boolean turned;
+    // Texture stuff move out later
+    float x;
+    float y;
+    float width = 1f;
+    float height = 1f;
+    float originX = width / 2f;
+    float originY = height / 2f;
+    float scaleX = 1f;
+    float scaleY = 1f;
+    float rotation = 0;
 
-	public Card(Pip pip, Suit suit, TextureRegion front, TextureRegion back) {
-		this.pip = pip;
-		this.suit = suit;
-		this.front = front;
-		this.back = back;
-	}
+    public Card() {// Keep for deserialaztion
+    }
 
-	public Suit getSuit() {
-		return suit;
-	}
+    public Card(Pip pip, Suit suit, TextureRegion front, TextureRegion back) {
+        this.pip = pip;
+        this.suit = suit;
+        this.front = front;
+        this.back = back;
+    }
 
-	public int getValue() {
-		return pip.value;
-	}
+    public Suit getSuit() {
+        return suit;
+    }
 
-	public static boolean checkSuits(Array<Card> cards) {
-		Suit initialSuit = cards.get(0).getSuit();
-		for (Card card : cards) {
-			if (initialSuit != card.getSuit()) {
-				return false;
-			}
-		}
-		return true;
-	}
+    public int getValue() {
+        return pip.value;
+    }
 
-	public int getPoints() {
-		return pip.points;
-	}
+    public static boolean checkSuits(Array<Card> cards) {
+        Suit initialSuit = cards.get(0).getSuit();
+        for (Card card : cards) {
+            if (initialSuit != card.getSuit()) {
+                return false;
+            }
+        }
+        return true;
+    }
 
-	public void setPosition(float x, float y) {
-		this.x = x;
-		this.y = y;
-	}
+    public int getPoints() {
+        return pip.points;
+    }
 
-	public void setPosition(Vector2 position) {
-		this.x = position.x;
-		this.y = position.y;
-	}
+    public void setPosition(float x, float y) {
+        this.x = x;
+        this.y = y;
+    }
 
-	public Vector2 getPosition() {
-		return new Vector2(x, y);
-	}
+    public void setPosition(Vector2 position) {
+        this.x = position.x;
+        this.y = position.y;
+    }
 
-	public void turn() {
-		turned = !turned;
-	}
+    public Vector2 getPosition() {
+        return new Vector2(x, y);
+    }
 
-	public void turn(boolean turned) {
-		this.turned = turned;
-	}
+    public void turn() {
+        turned = !turned;
+    }
 
-	@Override
-	public String toString() {
-		return pip + " of " + suit;
-	}
+    public void turn(boolean turned) {
+        this.turned = turned;
+    }
 
-	public void draw(Batch batch) {
-		batch.draw((turned) ? back : front, x, y, originX, originY, width, height, scaleX, scaleY, rotation);
-	}
+    @Override
+    public String toString() {
+        return pip + " of " + suit;
+    }
 
-	public void drawBack(Batch batch) {
-		batch.draw(back, x, y, originX, originY, width, height, 1f, 1f, rotation);
-	}
+    public void draw(Batch batch) {
+        batch.draw((turned) ? back : front, x, y, originX, originY, width, height, scaleX, scaleY, rotation);
+        if (scaleX != 1f) {
+            System.out.println("Drawing scaled card: scale=" + scaleX + " origin=" + originX + "," + originY);
+        }
+    }
 
-	public void drawFront(Batch batch) {
-		batch.draw(front, x, y, originX, originY, width, height, 1f, 1f, rotation);
-	}
+    public void drawBack(Batch batch) {
+        batch.draw(back, x, y, originX, originY, width, height, 1f, 1f, rotation);
+    }
 
-	public void rotate90(boolean clockwise) {
-		rotation += (clockwise) ? -90f : 90f;
-	}
+    public void drawFront(Batch batch) {
+        batch.draw(front, x, y, originX, originY, width, height, 1f, 1f, rotation);
+    }
 
-	public Rectangle getBoundingRectangle() {
-		return new Rectangle(x, y, width, height);
-	}
+    public void rotate90(boolean clockwise) {
+        rotation += (clockwise) ? -90f : 90f;
+    }
 
-	public void setX(float x) {
-		this.x = x;
-	}
+    public Rectangle getBoundingRectangle() {
+        return new Rectangle(x, y, width, height);
+    }
 
-	public void setY(float y) {
-		this.y = y;
-	}
+    public void setX(float x) {
+        this.x = x;
+    }
 
-	public float getX() {
-		return this.x;
-	}
+    public void setY(float y) {
+        this.y = y;
+    }
 
-	public float getY() {
-		return this.y;
-	}
+    public float getX() {
+        return this.x;
+    }
 
-	public void hover(boolean hovered) {
-		if (hovered) {
-			this.scaleX = 1.05f;
-			this.scaleY = 1.05f;
-		} else {
-			this.scaleX = 1f;
-			this.scaleY = 1f;
-		}
-	}
+    public float getY() {
+        return this.y;
+    }
+
+    public void hover(boolean hovered) {
+        if (hovered) {
+            System.out.println("hovered");
+            this.scaleX = 1.05f;
+            this.scaleY = 1.05f;
+        } else {
+            this.scaleX = 1f;
+            this.scaleY = 1f;
+        }
+    }
+
+    public void setAssetsAfterLoad(TextureAtlas atlas) {
+        front = atlas.findRegion("card_" + suit.name, pip.index);
+        back = atlas.findRegion("card_back");
+    }
 
 }
