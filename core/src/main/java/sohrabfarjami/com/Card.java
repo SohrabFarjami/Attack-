@@ -87,7 +87,6 @@ public class Card {
     public void draw(Batch batch) {
         batch.draw((turned) ? back : front, x, y, originX, originY, width, height, scaleX, scaleY, rotation);
         if (scaleX != 1f) {
-            System.out.println("Drawing scaled card: scale=" + scaleX + " origin=" + originX + "," + originY);
         }
     }
 
@@ -125,7 +124,6 @@ public class Card {
 
     public void hover(boolean hovered) {
         if (hovered) {
-            System.out.println("hovered");
             this.scaleX = 1.05f;
             this.scaleY = 1.05f;
         } else {

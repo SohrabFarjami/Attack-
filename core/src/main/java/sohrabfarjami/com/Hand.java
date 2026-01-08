@@ -94,7 +94,6 @@ public class Hand {
                 return slot.getPosition();
             }
         }
-        System.out.println("getCardSlot is returning null");
         return null;
     }
 

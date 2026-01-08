@@ -54,19 +54,12 @@ public class MainMenuScreen implements Screen {
         loadButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Json json = new Json();
-                FileHandle file = Gdx.files.local("saves/savegame.json");
-                GameState loadedGamestate = json.fromJson(GameState.class, file.readString());
+                GameState loadedGamestate = SaveManager.load("saves/savegame.bin", GameState.class);
                 TextureAtlas atlas = game.manager.get("cards.atlas", TextureAtlas.class);
                 GameController gameController = new GameController(atlas, loadedGamestate);
                 Array<Card> cards = loadedGamestate.getAllCards(); // Comeup with better logic
                 for (Card card : cards) {
                     card.setAssetsAfterLoad(atlas);
-                }
-                for (Player player : loadedGamestate.getPlayers()) {
-                    for (Card card : player.getHand()) {
-                        System.out.println(card);
-                    }
                 }
 
                 game.setScreen(new GameScreen(game, gameController));

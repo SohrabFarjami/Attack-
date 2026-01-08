@@ -1,11 +1,8 @@
 package sohrabfarjami.com;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -18,10 +15,8 @@ public class PauseScreen {
     private Table table;
     TextureAtlas uiAtlas;
     TextButton passButon;
-    private GameState gamestate;
 
     public PauseScreen(GameController gameController, Attack game, GameScreen gameScreen) {
-        gamestate = gameController.getGameState();
         stage = new Stage(new FitViewport(800, 500));
         Gdx.input.setInputProcessor(stage);
 
@@ -40,7 +35,6 @@ public class PauseScreen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 gameController.saveGameState();
-                System.out.println("saved game");
             }
         });
 

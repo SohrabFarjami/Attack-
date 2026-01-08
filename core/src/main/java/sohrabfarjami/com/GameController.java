@@ -31,7 +31,7 @@ public class GameController {
     private Array<Warnable> warnables = new Array<>();
     private Sound cardSlide = Gdx.audio.newSound(Gdx.files.internal("audio/card-slide-1.ogg"));
 
-    private String gameData;
+    private byte[] gameData;
 
     public GameController(TextureAtlas atlas) {
         this(atlas, null);
@@ -72,7 +72,6 @@ public class GameController {
     }
 
     public void playRound() {
-        System.out.println(gamestate.getRoundState());
         if (gamestate.getRoundState() == RoundState.ATTACKING) {
             attack();
         } else if (gamestate.getRoundState() == RoundState.DEFENDING) {
@@ -80,7 +79,7 @@ public class GameController {
         } else {
             endGame();
         }
-        toJsonGameState();
+        serializeGameState();
     }
 
     public void attack() {
@@ -375,13 +374,16 @@ public class GameController {
         }
     }
 
-    public void toJsonGameState() {
-        Json json = new Json();
-        gameData = json.toJson(gamestate);
+    public void serializeGameState() {
+        gameData = SaveManager.saveToBytes(gamestate);
     }
 
+    // Only call this when the save button is pressed
     public void saveGameState() {
-        FileHandle file = Gdx.files.local("saves/savegame.json");
-        file.writeString(gameData, false);
+        if (gameData != null) {
+            FileHandle file = Gdx.files.local("saves/savegame.bin");
+            file.writeBytes(gameData, false);
+        }
     }
+
 }
